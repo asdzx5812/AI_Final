@@ -30,13 +30,6 @@ class Point():
         self.offset = offset
 
 ```
-### MAP Class
-Map裡存的是每個點集合起來的list 
-```
-  class Map():
-      def __init__(self):
-          self.point_list = []
-```        
    
 #### Point 編號
 ```
@@ -53,3 +46,11 @@ Map裡存的是每個點集合起來的list
           '後門', '新體轉折點', '思亮館轉折點', '新體' #50~53
          ]
 ```
+
+### MAP Class
+Map裡存的是每個點集合起來的list 
+```
+  class Map():
+      def __init__(self):
+          self.point_list = []
+```        
