@@ -10,7 +10,7 @@ class Point():
         self.dis_list = dis_list
         self.building_location = building_location
         self.offset = offset
-
+        self.infect_prob = 0
 
 ## count the distance between two positions by longitude and lattitude
 def haversine(i,j,LOCATIONS):
