@@ -103,16 +103,16 @@ class Schedule:
 			i += 1
 		print ("i =",i)
 		print (self.destTimes[i])
-		if i >= len(self.destTimes) or self.destTimes[i] != '12:20':
-			if i >= len(self.destTimes):
+		if i > len(self.destTimes) or self.destTimes[i] != '12:20':
+			if i > len(self.destTimes):
 				self.destPointsID.append(random.choice(RESTAURANTS_ID))
 				self.destTimes.append('12:20')
 			else:
 				self.destPointsID = self.destPointsID[:i] + [random.choice(RESTAURANTS_ID)] + self.destPointsID[i:]
 				self.destTimes = self.destTimes[:i] + ['12:20'] + self.destTimes[i:]
 
-		elif i+1 >= len(self.destTimes) or self.destTimes[i+1] != '13:20':
-			if i+1 >= len(self.destTimes):
+		elif i+1 > len(self.destTimes) or self.destTimes[i+1] != '13:20':
+			if i+1 > len(self.destTimes):
 				self.destPointsID.append(random.choice(RESTAURANTS_ID))
 				self.destTimes.append('13:20')
 			else:
@@ -179,7 +179,7 @@ class Student:
 
 	def hasNextClass(self, CURRENT_TIME):
 		idx = self.schedule.nextDestIdx
-		return idx < self.schedule.numDestPoints and Time.isSmaller(self.schedule.destTimes[idx], Time.addMinutes(CURRENT_TIME, '0:15'))
+		return idx < self.schedule.numDestPoints and self.schedule.destTimes[idx] - CURRENT_TIME <= 15
 
 	def checkState(self, CURRENT_TIME):
 		if CURRENT_TIME in CLASS_END_TIME: # 下課了

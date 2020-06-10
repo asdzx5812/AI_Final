@@ -22,9 +22,3 @@ class Time:
 		t1 = datetime.strptime(s1, '%H:%M')
 		t2 = datetime.strptime(s2, '%H:%M')
 		return t1 < t2
-
-	@staticmethod
-	def isSmallerEqual(s1, s2):
-		t1 = datetime.strptime(s1, '%H:%M')
-		t2 = datetime.strptime(s2, '%H:%M')
-		return t1 <= t2
