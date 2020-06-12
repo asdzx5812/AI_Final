@@ -6,8 +6,8 @@
 ### POINT Class
 - POINT代表點
   - **name** : 該點的名字
-  - **position** : 經緯度
-    - ex: [21.xxxx, 121.xxxx]
+  - **position** : x,y座標
+    - ex: [6000, 4800]
   - **is_building** : 是否為建築物的代表點
     - 1 for building , 0 for no
   - **near_points** : 一個list記錄所有相鄰的點, 用編號(數字)紀錄
@@ -16,7 +16,7 @@
   - **building_position** : is_building為1的話，此點會記錄代表的建築物的中心位置
     - 一樣使用經緯度
     - is_building 若為 0，此點無值 [0,0]
-  - **offset** : 與building_position相似，紀錄代表的建築物的偏移量
+  - **offset** : 與building_position相似，紀錄代表的建築物的偏移量(x,y座標)
     - 將此值+-中心位置可得範圍
 ```
 class Point():
