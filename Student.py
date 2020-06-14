@@ -71,12 +71,12 @@ class Schedule:
 		self.destTimes = []
 
 		self.arrangeSchedue()
-		print (self.destPointsID)
-		print (self.destTimes)
+		# print (self.destPointsID)
+		# print (self.destTimes)
 		self.arrangeRestaurant()
 
-		print (self.destPointsID)
-		print (self.destTimes)
+		# print (self.destPointsID)
+		# print (self.destTimes)
 		
 		self.startTime = Time.getRandomTimeStamp('07:50', Time.addMinutes(self.destTimes[0], -15)) # 7:50～上課前20分鐘
 		self.nextDestIdx = 0
@@ -144,6 +144,7 @@ class Schedule:
 		print ('destPointsPosition : ', end='')
 		for i in self.destPointsID:
 			print (MAP.point_list[i].position, end='')
+		print ()
 		print ('destTimes :', self.destTimes)
 		print ('nextDestIdx :', self.nextDestIdx)
 		print ('numDestPoints :', self.numDestPoints)
@@ -163,7 +164,7 @@ class Student:
 		self.nextPointID = self.findNearestPointID()
 		self.currentPosition = MAP.point_list[self.schedule.startPointID].position
 		self.currentSpeed = 0.0
-		self.currentDirection = (0.0, 0.0)
+		self.currentDirection = np.array([0.0, 0.0])
 	
 	def getRandomGender(self):
 		return 'male' if random.choice([0, 1]) == 0 else 'female'
@@ -188,7 +189,7 @@ class Student:
 	def printPositionInfo(self):
 		print ('--------------Student--------------')
 		print ('scheduleState :', self.scheduleState)
-		print ('currentPointID :', self.currentPointID)
+		print ('currentPoint :', self.currentPointID, MAP.point_list[self.currentPointID].name)
 		print ('currentPosition :', self.currentPosition)
 		print ('nextPointID :', self.nextPointID)
 		print ('currentSpeed :', self.currentSpeed)
@@ -197,7 +198,7 @@ class Student:
 
 	def hasNextClass(self, CURRENT_TIME):
 		idx = self.schedule.nextDestIdx
-		return idx < self.schedule.numDestPoints and Time.compare(Time.addMinutes(CURRENT_TIME, 15), '==', self.schedule.destTimes[idx])
+		return idx < self.schedule.numDestPoints and Time.compare(Time.addMinutes(CURRENT_TIME, 15), '>=', self.schedule.destTimes[idx])
 
 	def findNearestPointID(self):
 		nearestPointID = None
@@ -213,18 +214,22 @@ class Student:
 	def move(self):
 
 		left_distance = np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition)
-		if np.linalg.norm(self.currentSpeed * self.currentDirection) < left_distance: # 還沒走到下一個點
+		delta_distance = np.linalg.norm(self.currentSpeed * self.currentDirection)
+		if  delta_distance < left_distance: # 還沒走到下一個點
 			self.currentPosition += self.currentSpeed * self.currentDirection
 
-		elif self.nextPointID == self.schedule.destPointsID[self.schedule.nextDestIdx]: # 到教室了
-			
+		elif delta_distance >= left_distance and self.nextPointID == self.schedule.destPointsID[self.schedule.nextDestIdx]: # 到教室了
+			print ("Reach the point!!")
 			self.currentPosition = MAP.point_list[self.nextPointID].position
-			self.schedule.nextDestIdx += 1
 			self.currentPointID = self.nextPointID
 			assert (self.currentPointID == self.schedule.destPointsID[self.schedule.nextDestIdx])
+			self.schedule.nextDestIdx += 1
+			self.printPositionInfo()
 
 		else: # 走超過下個點 -> 轉彎
 			print ("TURN~~~~~~~~~~~~~~~~~~~")
+			print (left_distance, delta_distance)
+			print (self.nextPointID, self.schedule.destPointsID[self.schedule.nextDestIdx])
 			left_distance -= np.linalg.norm(self.currentSpeed * self.currentDirection)
 			self.currentPosition = MAP.point_list[self.nextPointID].position 
 			self.currentPointID = self.nextPointID
@@ -236,7 +241,9 @@ class Student:
 			deltaDist = self.currentDirection * self.currentSpeed
 			self.currentPosition +=  deltaDist * (left_distance / np.linalg.norm(deltaDist))
 			#exit(0)
-
+			# print ("current point ID :", student.currentPointID)
+			# print ("next point ID :",student.nextPointID)
+			self.printPositionInfo()
 
 	def Action(self, CURRENT_TIME):
 
@@ -245,16 +252,23 @@ class Student:
 			self.currentSpeed = MOVING_SPEED
 
 		if CURRENT_TIME in CLASS_END_TIME: # 下課了
+			print ("Class ends --", CURRENT_TIME)
 			if self.scheduleState == 'INCLASS':
+				assert ((student.currentPosition == MAP.point_list[student.currentPointID].position).any())
+			
 				if self.hasNextClass(CURRENT_TIME): # 下節有課
+					print ("I have next class :", self.schedule.nextDestIdx, self.schedule.destPointsID[self.schedule.nextDestIdx])
 					idx = self.schedule.nextDestIdx
-					if self.schedule.destPoints[idx] != self.schedule.destPoints[idx-1]: # 下節課不同教室
+					if self.schedule.destPointsID[idx] != self.schedule.destPointsID[idx-1]: # 下節課不同教室
 						self.currentPosition = MAP.point_list[self.currentPointID].position
 						self.scheduleState = 'MOVING'
 						self.currentSpeed = MOVING_SPEED
 
 						if self.healthState == 'INFECT':
 							MAP.point_list[self.currentPointID].infect_prob -= INFECT_PROB
+
+					else:
+						self.schedule.nextDestIdx += 1
 
 				else: # 下節沒課
 					self.currentPosition = MAP.point_list[self.currentPointID].position
@@ -274,11 +288,13 @@ class Student:
 			self.move()
 
 			if (self.currentPosition == MAP.point_list[self.schedule.destPointsID[self.schedule.nextDestIdx]].position).any(): # 到教室了
-				print ("Reach the classroom!!")
+				print ("Reach the classroom!! --", CURRENT_TIME)
+				print (self.schedule.nextDestIdx, self.schedule.destPointsID[self.schedule.nextDestIdx])
 				self.scheduleState = 'INCLASS'
 				self.currentSpeed = 0
 				self.currentDirection = (0, 0)
-				self.schedule.nextDestIdx += 1
+
+				self.printPositionInfo()
 
 				if self.healthState == 'INFECTED':
 					MAP.point_list[self.currentPointID].infect_prob += INFECT_PROB
@@ -302,11 +318,15 @@ if __name__ == '__main__':
 		student = Student()
 	student.print()
 
+	last_state = 'AAA'
 	CURRENT_TIME = '07:50'
-	while Time.compare(CURRENT_TIME, '<=', '09:00'):
-		print ("CURRENT_TIME :", CURRENT_TIME)
+	while Time.compare(CURRENT_TIME, '<=', '20:00'):
 		student.Action(CURRENT_TIME)
-		student.printPositionInfo()
+		assert (student.currentPosition[0] >= 0 and student.currentPosition[1] >= 0)
+		if student.scheduleState != last_state:
+			print ("CURRENT_TIME :", CURRENT_TIME)
+			student.printPositionInfo()
+		last_state = student.scheduleState
 		CURRENT_TIME = Time.addMinutes(CURRENT_TIME, 1)
 
 
