@@ -18,6 +18,24 @@ class Time:
 		return datetime.strftime(t1+timedelta(minutes=m), '%H:%M')
 
 	@staticmethod
+	def compare(s1, option, s2):
+		t1 = datetime.strptime(s1, '%H:%M')
+		t2 = datetime.strptime(s2, '%H:%M')
+		
+		if option == '==':
+			return t1 == t2
+		if option == '<':
+			return t1 < t2
+		if option == '<=':
+			return t1 <= t2
+		if option == '>':
+			return t1 > t2
+		if option == '>=':
+			return t1 >= t2
+		else:
+			return 0
+
+	@staticmethod
 	def isSmaller(s1, s2):
 		t1 = datetime.strptime(s1, '%H:%M')
 		t2 = datetime.strptime(s2, '%H:%M')
