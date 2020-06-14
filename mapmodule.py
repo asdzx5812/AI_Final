@@ -3,7 +3,7 @@ import numpy
 import matplotlib.pyplot as plt
 from math import radians, cos, sin, asin, sqrt
 class Point():
-    def __init__(self, name, position, is_building, near_points, dis_list, building_position, offset):
+    def __init__(self, name, position, is_building, near_points, dis_list, building_position, offset, gcor_position, gcor_building_position, gcor_offset):
         self.name = name
         self.position = position
         self.is_building = is_building
@@ -12,6 +12,9 @@ class Point():
         self.building_position = building_position
         self.offset = offset
         self.infect_prob = 0
+        self.gcor_position = gcor_position
+        self.gcor_building_position = gcor_building_position
+        self.gcor_offset = gcor_offset
 
 ## count the distance between two positions by longitude and lattitude
 def haversine(i,j,LOCATIONS):
@@ -53,6 +56,7 @@ class Map():
                [7850,11550], [14700,8200], [2400,5850],
                [8700,9500], [5500,10128], [5200,6400]
               ])
+        BUILDINGS_LOCATION = BUILDINGS_LOCATION.astype(float)
         BUILDINGS_OFFSET = numpy.array([[200,300], [800,200], [600,400],
               [700,300], [300,300], [700,300],
               [300,400], [300,300], [400,200],
@@ -60,7 +64,7 @@ class Map():
               [300,150], [500,400], [250,250],
               [300,500], [150,200], [100,100]
              ])
-
+        BUILDINGS_OFFSET = BUILDINGS_OFFSET.astype(float)
         LOCATIONS = numpy.array([[6850,4600], [3300,4900], [5350,6000], [5600,6150], [6100,6400],
             [8800,7500], [12700,9100], [14400,7800], [10200,5700], [2800,6100],
             [6250,6600], [6250,6950], [1800,8550], [2500,8250], [3850,8250],
@@ -74,22 +78,22 @@ class Map():
             [12350,13400], [3850,13500], [7850,13500], [3850,14050], [1600,6200],
             [3850,14700]
             ])
-        '''
-        BUILDINGS_LOCATION = numpy.array([[25.019462, 121.541579], [25.017959, 121.536782], [25.0139, 121.5380],
+        
+        BUILDINGS_gcor_LOCATION = numpy.array([[25.019462, 121.541579], [25.017959, 121.536782], [25.0139, 121.5380],
                       [25.018944, 121.5405067], [25.016219, 121.537929], [25.020734, 121.542360],
                       [25.020576, 121.543630], [25.019704, 121.538500], [25.018924, 121.536640],
                       [25.018559, 121.536701], [25.015844, 121.537841], [25.021705, 121.535289],
                       [25.019554, 121.539472], [25.016810, 121.545216], [25.015297, 121.534613],
                       [25.018060, 121.540098], [25.018560, 121.537405], [25.015412, 121.537199]
                      ])
-        BUILDINGS_OFFSET = numpy.array([[0.0002, 0.0002], [0.0002, 0.0005], [0.0002, 0.0002],
+        BUILDINGS_gcor_OFFSET = numpy.array([[0.0002, 0.0002], [0.0002, 0.0005], [0.0002, 0.0002],
                     [0.0002, 0.0005], [0.0001, 0.0001], [0.0001, 0.0007],
                     [0.0002, 0.0001], [0.0001, 0.0002], [0.00012,0.0004],
                     [0.00013, 0.0004], [0.0001, 0.00015], [0.0003, 0.0004],
                     [0.00013, 0.00017], [0.0002, 0.0003], [0.0002, 0.00028],
                     [0.00026, 0.0003], [0.00016,0.0002], [0.0001, 0.0002]
                    ])
-        '''
+        
         POINTS = ['管一', '舟山門', '小小福', '小木屋', '舟山路轉折點1', # 0~4
           '舟山路轉折點2', '長興街門', '男六', '側門', '大一女', #10~14
           '共同', 'BICD', '正門', '椰林轉折點1', '椰林轉折點2', # 5~9
@@ -103,8 +107,8 @@ class Map():
           '後門', '新體轉折點', '思亮館轉折點2', '新體', '公館門',#50~54
           '新體門' #55
          ]
-        '''
-        LOCATIONS = numpy.array([[25.0142, 121.5385], [25.0146, 121.5355], [25.0153, 121.5373], [25.0154, 121.5376], [25.0156, 121.5381], 
+        
+        gcor_LOCATIONS = numpy.array([[25.0142, 121.5385], [25.0146, 121.5355], [25.0153, 121.5373], [25.0154, 121.5376], [25.0156, 121.5381], 
              [25.0165, 121.5402], [25.0178, 121.5435], [25.0166, 121.5451], [25.0150, 121.5414], [25.0153, 121.5349],
              [25.0158, 121.5380], [25.0162, 121.5381], [25.0169, 121.5340], [25.0169, 121.5347], [25.0170, 121.5359],
              [25.0170, 121.5377], [25.0170, 121.5381], [25.0170, 121.5390], [25.0170, 121.5398], [25.0170, 121.5401],
@@ -117,7 +121,7 @@ class Map():
              [25.0209, 121.5434], [25.0211, 121.5358], [25.0210, 121.5392], [25.0216, 121.5358], [25.0155, 121.5341],
              [25.0221, 121.5358]
             ])
-        '''
+        
         near_list = [[3], [2,9], [1,3], [0,2,4], [3,5,10], #0~4
              [4,6,8,18], [5,7,34], [6], [5], [1,54], #5-9
              [4,11], [10,16], [13], [12,14,20], [13,15,21], #10-14
@@ -134,12 +138,12 @@ class Map():
                 #construct adjacency matrix and count the shortest path
         MAXDIST = 999999999
         distance_list = []
-        for i in range(0,len(LOCATIONS)):
-            tmp_list = [MAXDIST]*len(LOCATIONS)
+        for i in range(0,len(gcor_LOCATIONS)):
+            tmp_list = [MAXDIST]*len(gcor_LOCATIONS)
             for j in near_list[i]:
-                tmp_list[j] = haversine(i,j,LOCATIONS)
+                tmp_list[j] = haversine(i,j,gcor_LOCATIONS)
             distance_list.append(tmp_list)
-        Floyd_Warshall(distance_list,LOCATIONS)
+        Floyd_Warshall(distance_list,gcor_LOCATIONS)
 
         #MAP裝所有的點
         #Point代表點(分為建築物前面的點和轉折點兩種)
@@ -154,9 +158,11 @@ class Map():
                 is_building = 1
                 building_location_index = BUILDINGS.index(POINTS[i])
                 building_location = BUILDINGS_LOCATION[building_location_index]
+                gcor_building_location = BUILDINGS_gcor_LOCATION[building_location_index]
                 offset = BUILDINGS_OFFSET[building_location_index]
+                gcor_offset = BUILDINGS_gcor_OFFSET[building_location_index]
             #print(POINTS[i], LOCATIONS[i], is_building, near_list[i], distance_list[i], building_location, offset)
-            tmp_point = Point(POINTS[i], LOCATIONS[i], is_building, near_list[i], distance_list[i], building_location, offset)
+            tmp_point = Point(POINTS[i], LOCATIONS[i], is_building, near_list[i], distance_list[i], building_location, offset, gcor_LOCATIONS[i],gcor_building_location, gcor_offset)
             self.add(tmp_point)
     def add(self,point):
         self.point_list.append(point)
