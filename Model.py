@@ -13,7 +13,7 @@ class AnimatedScatter(object):
         self.agents = agents
         self.CURRENT_TIME = CURRENT_TIME
         self.stream = self.data_stream()
-        img = cv2.imread("Test_map.png")
+        img = cv2.imread("map.png")
         
         # Setup the figure and axes...
         self.fig, self.ax = plt.subplots()

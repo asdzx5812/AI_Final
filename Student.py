@@ -9,23 +9,23 @@ HEALTH_STATES = ['HEALTHY', 'INFECTED']
 INFECT_PROB = 1.70834e-4 #0.0205 / 120 (1 /min)
 
 START_POINTS_ID = [
-	7, 	# 正門
+	12, # 正門
 	26, # 西門
 	50, # 後門
-	13, # 側門
+	8, 	# 側門
 	1, 	# 舟山門
-	11,	# 長興街門
+	6,	# 長興街門
 	54,	# 公館門
 	55, # 新體門
-	12, # 男六
-	14  # 大一女
+	7, 	# 男六
+	9  	# 大一女
 ]
 
 BUILDINGS_ID = [
 	41, # 新生 
 	35, # 博雅
 	29, # 普通
-	5,  # 共同
+	10, # 共同
 	53, # 新體
 	99	# 系館
 ]
@@ -36,7 +36,7 @@ INSTITUTES_ID = [
 	22, # 文學院 
 	0,  # 管一 
 	32, # 工綜
-	6,  # BICD
+	11,  # BICD
 	48, # 社科院
 	49  # 霖澤館
 ]
@@ -46,14 +46,14 @@ RESTAURANTS_ID = [
 	30, # 小福
 	2, 	# 小小福
 	39, # 女九
-	7, 	# 正門
+	12, # 正門
 	26, # 西門
 	50, # 後門
-	13, # 側門
+	8, # 側門
 	1, 	# 舟山門
-	11,	# 長興街門
+	6,	# 長興街門
 	54,	# 公館門
-	14  # 大一女
+	9  # 大一女
 ]
 
 CLASS_START_TIME = ['8:10', '9:10', '10:20', '11:20', '12:20', '13:20', '14:20', '15:30', '16:30', '17:30']
@@ -140,11 +140,14 @@ class Schedule:
 		print ('startPointID :', self.startPointID)
 		print ('startPointPosition :', MAP.point_list[self.startPointID].position)
 		print ('startTime :', self.startTime)
-		print ('destPointsID :', self.destPointsID)
+		print ('destPoints :', self.destPointsID)
+		for i in self.destPointsID:
+			print (MAP.point_list[i].name, end=' ')
+		print ("")
 		print ('destPointsPosition : ', end='')
 		for i in self.destPointsID:
 			print (MAP.point_list[i].position, end='')
-		print ()
+		print ("")
 		print ('destTimes :', self.destTimes)
 		print ('nextDestIdx :', self.nextDestIdx)
 		print ('numDestPoints :', self.numDestPoints)
@@ -179,8 +182,8 @@ class Student:
 		print ('healthState :', self.healthState)
 		print ('scheduleState :', self.scheduleState)
 		self.schedule.print()
-		print ('currentPointID :', self.currentPointID)
-		print ('nextPointID :', self.nextPointID)
+		print ('currentPoint :', self.currentPointID, MAP.point_list[self.currentPointID].name)
+		print ('nextPoint :', self.nextPointID, MAP.point_list[self.nextPointID].name)
 		print ('currentPosition :', self.currentPosition)
 		print ('currentSpeed :', self.currentSpeed)
 		print ('currentDirection :', self.currentDirection)
@@ -191,14 +194,15 @@ class Student:
 		print ('scheduleState :', self.scheduleState)
 		print ('currentPoint :', self.currentPointID, MAP.point_list[self.currentPointID].name)
 		print ('currentPosition :', self.currentPosition)
-		print ('nextPointID :', self.nextPointID)
+		print ('nextPoint :', self.nextPointID, MAP.point_list[self.nextPointID].name)
+		print ('nestDest : [', self.schedule.nextDestIdx, ']', MAP.point_list[self.schedule.destPointsID[self.schedule.nextDestIdx]].name)
 		print ('currentSpeed :', self.currentSpeed)
 		print ('currentDirection :', self.currentDirection)
 		print ('-----------------------------------')
 
 	def hasNextClass(self, CURRENT_TIME):
 		idx = self.schedule.nextDestIdx
-		return idx < self.schedule.numDestPoints and Time.compare(Time.addMinutes(CURRENT_TIME, 15), '>=', self.schedule.destTimes[idx])
+		return idx < self.schedule.numDestPoints and Time.compare(Time.addMinutes(CURRENT_TIME, 20), '>=', self.schedule.destTimes[idx])
 
 	def findNearestPointID(self):
 		nearestPointID = None
@@ -213,61 +217,89 @@ class Student:
 
 	def move(self):
 
-		left_distance = np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition)
 		delta_distance = np.linalg.norm(self.currentSpeed * self.currentDirection)
-		if  delta_distance < left_distance: # 還沒走到下一個點
-			self.currentPosition += self.currentSpeed * self.currentDirection
+	
+		while delta_distance > 0:
+			print ('current Point:', self.currentPointID, self.currentPosition, 'next point:',  self.nextPointID, MAP.point_list[self.nextPointID].position)
+			print ("cur_Dir :", self.currentDirection, 'vs', (MAP.point_list[self.nextPointID].position - self.currentPosition) / np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition))
+				
+			left_distance_to_next_point = np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition)
+			# print ("id :", self.currentPointID, MAP.point_list[self.currentPointID].name, '->', self.nextPointID,  MAP.point_list[self.nextPointID].name)
+			print ("dis =", delta_distance, left_distance_to_next_point)
 
-		elif delta_distance >= left_distance and self.nextPointID == self.schedule.destPointsID[self.schedule.nextDestIdx]: # 到教室了
-			print ("Reach the point!!")
-			self.currentPosition = MAP.point_list[self.nextPointID].position
-			self.currentPointID = self.nextPointID
-			assert (self.currentPointID == self.schedule.destPointsID[self.schedule.nextDestIdx])
-			self.schedule.nextDestIdx += 1
-			self.printPositionInfo()
+			if delta_distance >= left_distance_to_next_point: 
+				delta_distance -= left_distance_to_next_point
 
-		else: # 走超過下個點 -> 轉彎
-			print ("TURN~~~~~~~~~~~~~~~~~~~")
-			print (left_distance, delta_distance)
-			print (self.nextPointID, self.schedule.destPointsID[self.schedule.nextDestIdx])
-			left_distance -= np.linalg.norm(self.currentSpeed * self.currentDirection)
-			self.currentPosition = MAP.point_list[self.nextPointID].position 
-			self.currentPointID = self.nextPointID
-			self.nextPointID = self.findNearestPointID()
-			# print ("nextPointID =====", self.nextPointID)
+				self.currentPointID = self.nextPointID
+				self.currentPosition = MAP.point_list[self.currentPointID].position
+				self.nextPointID = self.findNearestPointID()
+
+				#print ("id ~ ", self.currentPointID, MAP.point_list[self.currentPointID].name, '->', self.nextPointID,  MAP.point_list[self.nextPointID].name)
+				self.currentDirection = MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]
+
+				#print ("!!!!!!", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[self.schedule.nextDestIdx]].name)
+				if self.currentPointID == self.schedule.destPointsID[self.schedule.nextDestIdx]: # 到教室了
+					print ("Reach the point!!")
+					#self.printPositionInfo()
+					break
+				else:
+					print ("Turn to", self.currentPointID, MAP.point_list[self.currentPointID].name)
 			
-			D = MAP.point_list[self.nextPointID].position - self.currentPosition
-			self.currentDirection = D / np.linalg.norm(D)
-			deltaDist = self.currentDirection * self.currentSpeed
-			self.currentPosition +=  deltaDist * (left_distance / np.linalg.norm(deltaDist))
-			#exit(0)
-			# print ("current point ID :", student.currentPointID)
-			# print ("next point ID :",student.nextPointID)
-			self.printPositionInfo()
+			else: # delta_distance < left_distance_to_next_point
+				assert ((self.currentDirection == (MAP.point_list[self.nextPointID].position - self.currentPosition) / np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition)).all())
+				self.currentPointID = -1
+				self.currentPosition += self.currentDirection * delta_distance
+				break
+		self.printPositionInfo()
 
 	def Action(self, CURRENT_TIME):
 
-		if self.scheduleState == 'IDLE' and self.hasNextClass(CURRENT_TIME): # 該上課了
-			self.scheduleState = 'MOVING'
-			self.currentSpeed = MOVING_SPEED
+		if self.scheduleState == 'IDLE':
+			if self.hasNextClass(CURRENT_TIME): # 該上課了
+				self.scheduleState = 'MOVING'
+				self.nextPointID = self.findNearestPointID()
+				self.currentSpeed = MOVING_SPEED
+				self.currentDirection = MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]
+			else:
+				pass
 
-		if CURRENT_TIME in CLASS_END_TIME: # 下課了
-			print ("Class ends --", CURRENT_TIME)
-			if self.scheduleState == 'INCLASS':
-				assert ((student.currentPosition == MAP.point_list[student.currentPointID].position).any())
+		elif self.scheduleState == 'MOVING':
+
+			self.move()
+
+			if self.currentPointID == self.schedule.destPointsID[self.schedule.nextDestIdx]: # 到教室了
+				print ("Reach the classroom!! --", CURRENT_TIME)
+				#print (MAP.point_list[self.schedule.destPointsID[self.schedule.nextDestIdx]].position)
+				self.scheduleState = 'INCLASS'
+				self.currentSpeed = 0
+				self.currentDirection = np.array([0.0, 0.0])
+				self.schedule.nextDestIdx += 1
+
+				print ('-->')
+				self.printPositionInfo()
+
+				if self.healthState == 'INFECTED':
+					MAP.point_list[self.currentPointID].infect_prob += INFECT_PROB
+
+		elif self.scheduleState == 'INCLASS':
+
+			if CURRENT_TIME in CLASS_END_TIME: # 下課了
+				print ("Class ends --", CURRENT_TIME)
 			
 				if self.hasNextClass(CURRENT_TIME): # 下節有課
-					print ("I have next class :", self.schedule.nextDestIdx, self.schedule.destPointsID[self.schedule.nextDestIdx])
+					print ("I have next class :", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[self.schedule.nextDestIdx]].name)
 					idx = self.schedule.nextDestIdx
 					if self.schedule.destPointsID[idx] != self.schedule.destPointsID[idx-1]: # 下節課不同教室
 						self.currentPosition = MAP.point_list[self.currentPointID].position
 						self.scheduleState = 'MOVING'
+						self.nextPointID = self.findNearestPointID()
 						self.currentSpeed = MOVING_SPEED
+						self.currentDirection = MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]
 
 						if self.healthState == 'INFECT':
 							MAP.point_list[self.currentPointID].infect_prob -= INFECT_PROB
 
-					else:
+					else: # 下節同教室
 						self.schedule.nextDestIdx += 1
 
 				else: # 下節沒課
@@ -275,40 +307,17 @@ class Student:
 					self.scheduleState = 'IDLE'
 
 					if self.healthState == 'INFECT':
-							MAP.point_list[self.currentPointID].infect_prob -= INFECT_PROB
+						MAP.point_list[self.currentPointID].infect_prob -= INFECT_PROB
 
-		if self.scheduleState == 'MOVING':
+			else:
 
-			if self.currentPointID != -1:
-				nextPointID = self.findNearestPointID()
-				D = MAP.point_list[nextPointID].position - self.currentPosition
-				self.currentDirection = D / np.linalg.norm(D)
-				self.currentPointID = -1
+				infect_prob = MAP.point_list[self.currentPointID].infect_prob
+				if infect_prob > 0 and self.healthState == 'HEALTHY':
+					if random.random() <= infect_prob:
+						self.healthState = 'INFECTED'
+						MAP.point_list[self.currentPointID].infect_prob += INFECT_PROB
 
-			self.move()
 
-			if (self.currentPosition == MAP.point_list[self.schedule.destPointsID[self.schedule.nextDestIdx]].position).any(): # 到教室了
-				print ("Reach the classroom!! --", CURRENT_TIME)
-				print (self.schedule.nextDestIdx, self.schedule.destPointsID[self.schedule.nextDestIdx])
-				self.scheduleState = 'INCLASS'
-				self.currentSpeed = 0
-				self.currentDirection = (0, 0)
-
-				self.printPositionInfo()
-
-				if self.healthState == 'INFECTED':
-					MAP.point_list[self.currentPointID].infect_prob += INFECT_PROB
-
-		elif self.scheduleState == 'INCLASS':
-			
-			infect_prob = MAP.point_list[self.currentPointID].infect_prob
-			if infect_prob > 0 and self.healthState == 'HEALTHY':
-
-				if random.random() <= infect_prob:
-					self.healthState = 'INFECTED' # !!!!!!!
-					MAP.point_list[self.currentPointID].infect_prob += INFECT_PROB
-
-		
 
 
 if __name__ == '__main__':
@@ -320,9 +329,11 @@ if __name__ == '__main__':
 
 	last_state = 'AAA'
 	CURRENT_TIME = '07:50'
-	while Time.compare(CURRENT_TIME, '<=', '20:00'):
+	while Time.compare(CURRENT_TIME, '<=', '12:00'):
+		print ('===================================================================', CURRENT_TIME)
 		student.Action(CURRENT_TIME)
-		assert (student.currentPosition[0] >= 0 and student.currentPosition[1] >= 0)
+		if student.currentPosition[0] < 0 or student.currentPosition[1] < 0:
+			print (student.currentPosition)
 		if student.scheduleState != last_state:
 			print ("CURRENT_TIME :", CURRENT_TIME)
 			student.printPositionInfo()
