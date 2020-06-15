@@ -18,10 +18,10 @@
     - is_building 若為 0，此點無值 [0,0]
   - **offset** : 與building_position相似，紀錄代表的建築物的偏移量(x,y座標)
     - 將此值+-中心位置可得範圍
-  - **gcor_position : 經緯度
-  - **gcor_building_position : 建築物經緯度
-  - **gcor_offset : 偏移量(經緯度)
-  - **unit_vec : a dictionary which the unit vector with it's nearly points
+  - **gcor_position** : 經緯度
+  - **gcor_building_position** : 建築物經緯度
+  - **gcor_offset** : 偏移量(經緯度)
+  - **unit_vec** : a dictionary which the unit vector with it's nearly points
 ```
 class Point():
     def __init__(self, name, position, is_building, near_point, dis_list, building_location, offset):
