@@ -1,9 +1,10 @@
 import folium
 import numpy
+import math
 import matplotlib.pyplot as plt
 from math import radians, cos, sin, asin, sqrt
 class Point():
-    def __init__(self, name, position, is_building, near_points, dis_list, building_position, offset, gcor_position, gcor_building_position, gcor_offset):
+    def __init__(self, name, position, is_building, near_points, dis_list, building_position, offset, gcor_position, gcor_building_position, gcor_offset, unit_vec):
         self.name = name
         self.position = position
         self.is_building = is_building
@@ -15,7 +16,7 @@ class Point():
         self.gcor_position = gcor_position
         self.gcor_building_position = gcor_building_position
         self.gcor_offset = gcor_offset
-
+        self.unit_vec = unit_vec
 ## count the distance between two positions by longitude and lattitude
 def haversine(i,j,LOCATIONS):
     lon1 = LOCATIONS[i][1]
@@ -30,7 +31,14 @@ def haversine(i,j,LOCATIONS):
     c = 2 * asin(sqrt(a)) 
     r = 6371 # the radius of earth (km)
     return c * r * 1000
-
+def unitvector(i, j, LOCATIONS):
+    x1 = LOCATIONS[i][0]
+    y1 = LOCATIONS[i][1]
+    x2 = LOCATIONS[j][0]
+    y2 = LOCATIONS[j][1]
+    d = math.sqrt(pow(x2-x1,2) + pow(y2-y1,2))
+    v = numpy.array([(x2-x1)/d, (y2-y1)/d])
+    return v
 def Floyd_Warshall(distance_list,LOCATIONS):
     for i in range(0,len(LOCATIONS)):
         distance_list[i][i] = 0
@@ -135,13 +143,18 @@ class Map():
              [49], [35,52,53], [47,51], [51,55], [9],#50-53
              [53]
             ]
+        
                 #construct adjacency matrix and count the shortest path
         MAXDIST = 999999999
         distance_list = []
+        unit_vector_list = []
         for i in range(0,len(gcor_LOCATIONS)):
             tmp_list = [MAXDIST]*len(gcor_LOCATIONS)
+            tmp_unit_vector = {}
             for j in near_list[i]:
                 tmp_list[j] = haversine(i,j,gcor_LOCATIONS)
+                tmp_unit_vector[str(j)] = unitvector(i,j,LOCATIONS)
+            unit_vector_list.append(tmp_unit_vector)
             distance_list.append(tmp_list)
         Floyd_Warshall(distance_list,gcor_LOCATIONS)
 
@@ -162,7 +175,7 @@ class Map():
                 offset = BUILDINGS_OFFSET[building_location_index]
                 gcor_offset = BUILDINGS_gcor_OFFSET[building_location_index]
             #print(POINTS[i], LOCATIONS[i], is_building, near_list[i], distance_list[i], building_location, offset)
-            tmp_point = Point(POINTS[i], LOCATIONS[i], is_building, near_list[i], distance_list[i], building_location, offset, gcor_LOCATIONS[i],gcor_building_location, gcor_offset)
+            tmp_point = Point(POINTS[i], LOCATIONS[i], is_building, near_list[i], distance_list[i], building_location, offset, gcor_LOCATIONS[i],gcor_building_location, gcor_offset, unit_vector_list[i])
             self.add(tmp_point)
     def add(self,point):
         self.point_list.append(point)
