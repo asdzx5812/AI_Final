@@ -153,7 +153,7 @@ class Map():
             tmp_unit_vector = {}
             for j in near_list[i]:
                 tmp_list[j] = haversine(i,j,gcor_LOCATIONS)
-                tmp_unit_vector[str(j)] = unitvector(i,j,LOCATIONS)
+                tmp_unit_vector[j] = unitvector(i,j,LOCATIONS)
             unit_vector_list.append(tmp_unit_vector)
             distance_list.append(tmp_list)
         Floyd_Warshall(distance_list,gcor_LOCATIONS)
