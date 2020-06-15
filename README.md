@@ -69,3 +69,6 @@ $R_0$估計約為3.5(without lockdown)
 (ref:http://www.publichealth.org.tw/upload/files/%E7%AC%AC%E4%B8%89%E5%A0%82%E8%AA%B2%EF%BC%BF%E6%96%B0%E5%86%A0%E8%82%BA%E7%82%8E%E4%B9%8B%E5%82%B3%E6%92%AD%E5%88%86%E6%9E%90(1).pdf)
 因此估計傳染率(每次接觸)為3.5/(50*3.4)=0.0205
 ```
+
+### Position and path in Map
+![](https://i.imgur.com/0TM248e.jpg)
