@@ -177,5 +177,7 @@ class Map():
             #print(POINTS[i], LOCATIONS[i], is_building, near_list[i], distance_list[i], building_location, offset)
             tmp_point = Point(POINTS[i], LOCATIONS[i], is_building, near_list[i], distance_list[i], building_location, offset, gcor_LOCATIONS[i],gcor_building_location, gcor_offset, unit_vector_list[i])
             self.add(tmp_point)
+        null_point = Point("",[0,0],0,[],[],[0,0],[0,0],[0,0],[0,0],[0,0],{})
+        self.add(null_point)
     def add(self,point):
         self.point_list.append(point)
