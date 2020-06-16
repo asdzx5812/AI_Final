@@ -72,3 +72,63 @@ $R_0$估計約為3.5(without lockdown)
 
 ### Position and path in Map
 ![](https://i.imgur.com/0TM248e.jpg)
+
+### Schedule Class
+- Attributes
+  - startPointID: 起點編號（到校位置）
+  - startTime: 起點時間（到校時間）
+  - destPointsID: 上課教室&午餐地點編號
+  - destTimes: 上課&午餐時間
+  - endPointID: 終點編號（離校位置）
+  - endTime: 終點時間（離校時間）
+  - nextDestIdx: 下一個目的地（教室/餐廳）的index
+  - numDestPoints: len(destPointsID)
+
+- Methods
+  - newDayInit(day): 第day天的初始化
+  - arrangeSchedule(): 安排課表
+  - arrangeRestaurant(): 選擇餐廳與吃飯時間
+  - getRandomStartPointID(gender)
+  - getRandomDestPointID()
+  - print()
+  
+### Student Class
+- Attributes
+  - gender: 性別
+  - institudeIdx: 科系index
+  - healtState: 當前健康狀態，分為'HEALTHY'和'INFECTED'
+  - schedule: Schedule()
+  - scheduleState: 當前上課狀態，分為'IDLE','MOVING','INCLASS'
+  - currentPointID: 當前站在哪個Point上，若在兩點之間移動則為-1
+  - nextPointID: 下一個要到的Point，利用findNearestPointID()找到
+  - currentPosition: 當前x, y位置
+  - currentSpeed: 當前移動速度，目前恆等於MOVING_SPEED
+  - currentDirection: 當前移動方向，等於MAP.point_list[currentPointID].unit_vec[nextPointID]
+  - visible: 當前是否在校園中
+
+- Methods:
+  - getRandomGender()
+  - getRandomInstituteIdx()
+  - print()
+  - printPositionInfo()
+  - hasNextClass(CURRENT_TIME): 判斷下一節課上課時間or吃飯時間是否在20分鐘內
+  - timeToLeave(CURRENT_TIME): 判斷是否沒課且回家時間在20分鐘內
+  - findNearestPointID(day): 根據currentPointID找到下一個離目的地教室/餐廳最近的點
+  - move(day): 往目的地移動
+  - Action(CURRENT_TIME, day): 每個時間點檢查狀態、進行動作
+
+- Usage:
+```
+student = Student()
+
+for day in range(5):
+    student.newDayInit(day)
+    CURRENT_TIME = '07:40'
+    while Time.compare(CURRENT_TIME, '<=', '20:00'):
+        student.Action(CURRENT_TIME, day)
+        if student.visible:
+            # show him/her on the map
+        else:
+            # hide him/her on the map
+    CURRENT_TIME = Time.addMinutes(CURRENT_TIME, 1)
+```
