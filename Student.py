@@ -20,7 +20,6 @@ START_POINTS_ID = [
 	7, 	# 男六
 	9  	# 大一女
 ]
-
 BUILDINGS_ID = [
 	41, # 新生 
 	35, # 博雅
@@ -66,7 +65,7 @@ RESTAURANTS_ID = [
 
 CLASS_START_TIME = ['8:10', '9:10', '10:20', '11:20', '12:20', '13:20', '14:20', '15:30', '16:30', '17:30', '18:25']
 CLASS_END_TIME = ['9:00', '10:00', '11:10', '12:10', '13:10', '14:10', '15:10', '16:20', '17:20', '18:20', '19:15']
-SCHEDULE_STATE = ['IDLE', 'INCLASS', 'MOVING']
+SCHEDULE_STATE = ['IDLE', 'INCLASS', 'MOVING', 'NULL']
 
 MOVING_SPEED = 500.0
 
@@ -181,14 +180,13 @@ class Student:
 		self.gender = self.getRandomGender()
 		self.instituteIdx = self.getRandomInstituteIdx()
 		self.healthState = healthState
-		self.scheduleState = 'IDLE' 
+		self.scheduleState = 'NULL' 
 		self.schedule = Schedule(gender=self.gender, instituteIdx=self.instituteIdx)
 		self.currentPointID = self.schedule.startPointID
 		self.nextPointID = -1
 		self.currentPosition = (MAP.point_list[self.schedule.startPointID].position).copy() # shallow copy
 		self.currentSpeed = 0.0
 		self.currentDirection = np.array([0.0, 0.0])
-		self.visible = False
 	
 	def getRandomGender(self):
 		return 'male' if random.choice([0, 1]) == 0 else 'female'
@@ -208,7 +206,6 @@ class Student:
 		print ('currentPosition :', self.currentPosition)
 		print ('currentSpeed :', self.currentSpeed)
 		print ('currentDirection :', self.currentDirection)
-		print ('visible :', self.visible)
 		print ('-----------------------------------')
 
 	def printPositionInfo(self, day):
@@ -221,7 +218,6 @@ class Student:
 			print ('nextDest : [', self.schedule.nextDestIdx, ']', MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].name)
 		print ('currentSpeed :', self.currentSpeed)
 		print ('currentDirection :', self.currentDirection)
-		print ('visible :', self.visible)
 		print ('-----------------------------------')
 
 	def hasNextClass(self, CURRENT_TIME):
@@ -290,20 +286,20 @@ class Student:
 			self.printPositionInfo(day)
 
 		#print (CURRENT_TIME, self.schedule.startTime)
-		if Time.compare(CURRENT_TIME, '==', self.schedule.startTime):
-			self.visible = True
+		if Time.compare(CURRENT_TIME, '==', self.schedule.startTime): # 到學校了
+			self.scheduleState = 'IDLE'
 
 		#print (CURRENT_TIME, self.schedule.nextDestIdx, self.schedule.numDestPoints, self.currentPointID, self.schedule.endPointID)
-		if self.schedule.nextDestIdx == self.schedule.numDestPoints and self.currentPointID == self.schedule.endPointID and self.visible:
-			#print ('Disappear~~~', CURRENT_TIME)
-			self.visible = False
-			#self.printPositionInfo(day)
+		# if self.schedule.nextDestIdx == self.schedule.numDestPoints and self.currentPointID == self.schedule.endPointID and self.visible: 
+		# 	#print ('Disappear~~~', CURRENT_TIME)
+		# 	self.scheduleState = 'NULL'
+		# 	#self.printPositionInfo(day)
 
 		if self.scheduleState == 'IDLE':
 			if self.hasNextClass(CURRENT_TIME) or (self.schedule.nextDestIdx == self.schedule.numDestPoints and self.timeToLeave(CURRENT_TIME)): # 該上課了
 				self.scheduleState = 'MOVING'
 				self.nextPointID = self.findNearestPointID(day)
-				self.currentSpeed = MOVING_SPEED
+				self.currentSpeed = MOVING_SPEED + random.uniform(-50, 50)
 				self.currentDirection = (MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]).copy()
 			else:
 				pass
@@ -316,10 +312,11 @@ class Student:
 				or (self.currentPointID == self.schedule.endPointID): # 到教室了/要離開學校了
 				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
 					print ("Reach the classroom!! --", CURRENT_TIME)
+					self.scheduleState = 'INCLASS'
 				else :
 					print ("Bye bye!! --", CURRENT_TIME)
+					self.scheduleState = 'NULL'
 				#print (MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].position)
-				self.scheduleState = 'INCLASS'
 				self.currentSpeed = 0
 				self.currentDirection = np.array([0.0, 0.0])
 				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
@@ -370,9 +367,7 @@ class Student:
 
 
 
-
 if __name__ == '__main__':
-
 
 	day = 0
 	student = Student()
