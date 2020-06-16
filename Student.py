@@ -220,7 +220,7 @@ class Student:
 		print ('currentDirection :', self.currentDirection)
 		print ('-----------------------------------')
 
-	def hasNextClass(self, CURRENT_TIME):
+	def hasNextClass(self, CURRENT_TIME, day):
 		idx = self.schedule.nextDestIdx
 		return idx < self.schedule.numDestPoints and Time.compare(Time.addMinutes(CURRENT_TIME, 20), '>=', self.schedule.destTimes[day][idx])
 
