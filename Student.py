@@ -288,6 +288,7 @@ class Student:
 		#print (CURRENT_TIME, self.schedule.startTime)
 		if Time.compare(CURRENT_TIME, '==', self.schedule.startTime): # 到學校了
 			self.scheduleState = 'IDLE'
+			self.currentPosition = (MAP.point_list[self.schedule.startPointID].position).copy()
 
 		#print (CURRENT_TIME, self.schedule.nextDestIdx, self.schedule.numDestPoints, self.currentPointID, self.schedule.endPointID)
 		# if self.schedule.nextDestIdx == self.schedule.numDestPoints and self.currentPointID == self.schedule.endPointID and self.visible: 
@@ -296,7 +297,7 @@ class Student:
 		# 	#self.printPositionInfo(day)
 
 		if self.scheduleState == 'IDLE':
-			if self.hasNextClass(CURRENT_TIME) or (self.schedule.nextDestIdx == self.schedule.numDestPoints and self.timeToLeave(CURRENT_TIME)): # 該上課了
+			if self.hasNextClass(CURRENT_TIME, day) or (self.schedule.nextDestIdx == self.schedule.numDestPoints and self.timeToLeave(CURRENT_TIME)): # 該上課了
 				self.scheduleState = 'MOVING'
 				self.nextPointID = self.findNearestPointID(day)
 				self.currentSpeed = MOVING_SPEED + random.uniform(-50, 50)
@@ -313,6 +314,11 @@ class Student:
 				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
 					print ("Reach the classroom!! --", CURRENT_TIME)
 					self.scheduleState = 'INCLASS'
+					offset_x = MAP.point_list[self.currentPointID].offset[0]
+					offset_y = MAP.point_list[self.currentPointID].offset[1]
+					self.currentPosition[0] += random.uniform(offset_x, -offset_x)
+					self.currentPosition[1] += random.uniform(offset_y, -offset_y)
+					
 				else :
 					print ("Bye bye!! --", CURRENT_TIME)
 					self.scheduleState = 'NULL'
@@ -333,7 +339,7 @@ class Student:
 			if CURRENT_TIME in CLASS_END_TIME: # 下課了
 				print ("Class ends --", CURRENT_TIME)
 			
-				if self.hasNextClass(CURRENT_TIME): # 下節有課
+				if self.hasNextClass(CURRENT_TIME, day): # 下節有課
 					print ("I have next class :", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].name)
 					idx = self.schedule.nextDestIdx
 					if self.schedule.destPointsID[day][idx] != self.schedule.destPointsID[day][idx-1]: # 下節課不同教室
