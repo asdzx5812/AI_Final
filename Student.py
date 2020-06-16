@@ -317,7 +317,7 @@ class Student:
 					print ("Bye bye!! --", CURRENT_TIME)
 					self.scheduleState = 'NULL'
 				#print (MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].position)
-				self.currentSpeed = 0
+				self.currentSpeed = 0.0
 				self.currentDirection = np.array([0.0, 0.0])
 				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
 					self.schedule.nextDestIdx += 1
@@ -341,7 +341,7 @@ class Student:
 						self.scheduleState = 'MOVING'
 
 						self.nextPointID = self.findNearestPointID(day)
-						self.currentSpeed = MOVING_SPEED
+						self.currentSpeed = MOVING_SPEED + random.uniform(50, -50)
 						self.currentDirection = (MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]).copy()
 					
 						if self.healthState == 'INFECT':
