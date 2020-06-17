@@ -315,6 +315,10 @@ class Student:
 
 	def Action(self, CURRENT_TIME, day):
 
+		if self.healthState.state == 'DEAD':
+			self.scheduleState = 'NULL'
+			return
+
 		if CURRENT_TIME in CLASS_END_TIME:
 			logging.debug(f'====================={CURRENT_TIME}============================')
 			# self.printPositionInfo(day)
