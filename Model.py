@@ -27,9 +27,7 @@ def update(num):
     global dots
     global txt
     
-    print(num)
     pos = []
-    print(Combined_times[num][0], Combined_times[num][1], np.sum([student.healthState.state == "INFECTED"for student in Students]))
     day = Combined_times[num][1] % 5
     for student in Students:
         if num != 0 and Combined_times[num][1] != Combined_times[num-1][1]:
@@ -40,9 +38,15 @@ def update(num):
     cur = []
     for i in range(len(Health_state)):
         cur.append( np.sum([student.healthState.state == Health_state[i] for student in Students]) )
-        State_count.append(cur[i])
+        try:
+            State_count[i][num] = cur[i]
+        except:
+            State_count[i].append(cur[i])
     cur=np.array(cur).astype(str)
-    print(cur)
+    if num % 10 == 0:
+        print("frame:", num)
+        print("days:", Combined_times[num][0], "time:s",Combined_times[num][1], "infectious:",np.sum([student.healthState.state == "INFECTIOS"for student in Students]))
+        print(list(zip(Health_state,cur)))
     
     txt.set_text('Time={}, Days={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[num][0], Combined_times[num][1], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
     #print(new_x.shape)
@@ -87,20 +91,20 @@ def main():
     global Students
     global State_count
     start_time = "07:30"
-    end_time = "08:00"
-    days = 1
-    Healthy_num = 2
+    end_time = "20:00"
+    days = 5
+    Healthy_num = 2999
     Infected_num = 1
     
     Combined_times = Def_Times(start_time, end_time, days)    
     Students = Create_Students(Healthy_num, Infected_num)
-    for s in Students:
-        print(s.healthState.state)
+    #/for s in Students:
+    #    print(s.healthState.state)
     State_count = []
 
     for i in range(len(Health_state)):
         State_count.append([])
-        State_count[i].append(np.sum([student.healthState.state == Health_state[i] for student in Students] ))
+        #State_count[i].append(np.sum([student.healthState.state == Health_state[i] for student in Students] ))
     fig = plt.figure(figsize=(7, 6), dpi=100)
 
     red_patch = mpatches.Patch(color='red', label='infectious')
@@ -134,14 +138,17 @@ def main():
     txt = fig.suptitle('Time={}, Days={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[0][0], Combined_times[0][1], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
 
     #print(x)
-    ani = animation.FuncAnimation(fig=fig, func=update, frames=len(Combined_times), interval=0.01)
+    ani = animation.FuncAnimation(fig=fig, func=update, frames=len(Combined_times), interval=0.1)
     img = cv2.imread("map.png")
     plt.imshow(img, extent=[0, 16000, 0, 16000])
-    ani.save('Simulation_5days.mp4', writer="ffmpeg", fps=60)
+    ani.save('Simulation.mp4', writer="ffmpeg", fps=60)
     plt.show()
-    #print(np.array(Combined_times))
-    #np.savetxt("Combined_times.csv", np.array(Combined_times).astype(str), delimiter=",")
-    #np.savetxt("States_count.csv", np.array(State_count).astype(str) , delimiter=",")
+#    print(np.array(Combined_times))
+    #print(Combined_times)
+    #print(State_count)
+    CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
+    #print(CSV_STACK)
+    np.savetxt("out.csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
 
 if __name__ == "__main__":
     main()
