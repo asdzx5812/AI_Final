@@ -101,6 +101,7 @@ def main():
     Infected_num = 1
     
     Combined_times = Def_Times(start_time, end_time, days)    
+    Students = Create_Students(Healthy_num, Infected_num)
 
     State_count = []
 
