@@ -8,6 +8,7 @@ from Time import Time
 from Student import Student, Schedule
 import mapmodule
 import cv2
+import argparse
 
 Health_state = ["SUSCEPTIBLE", "EXPOSED", "INFECTIOUS", "RECOVERED", "DEAD"]
 CLASS_END_TIME = ['09:00', '10:00', '11:10', '12:10', '13:10', '14:10', '15:10', '16:20', '17:20', '18:20', '19:15']
@@ -19,7 +20,7 @@ def my_color(s):
         return [1, 0.5, 0.5]
     elif s.healthState.state == Health_state[2]:
         return [1, 0, 0]
-    else: return [0, 1, 1]
+    else: return [0, 1, 0]
     
 def update(num):
     global Combined_times
@@ -87,18 +88,24 @@ def Create_Students(Healthy_num, Infected_num):
         students.append(Student())
     for i in range(Infected_num):
         students.append(Student(Health_state[2]))
+    a = Student()
+    a.healthState.state = "EXPOSED"
+    #b = Student()
+    ##b.healthState.state = "RECOVERED"
+    #students.append(a)
+    #students.append(b)
     return students
 
-def main():
+def main(parser):
     global Combined_times
     global Students
     global State_count
     start_time = "07:30"
     end_time = "20:00"
-    days = 5
-    Healthy_num = 2999
+    days = parser.d
+    Healthy_num = parser.n - parser.i
 
-    Infected_num = 1
+    Infected_num = parser.i
     
     Combined_times = Def_Times(start_time, end_time, days)    
     Students = Create_Students(Healthy_num, Infected_num)
@@ -110,12 +117,12 @@ def main():
         #State_count[i].append(np.sum([student.healthState.state == Health_state[i] for student in Students] ))
     fig = plt.figure(figsize=(7, 6), dpi=100)
 
-    red_patch = mpatches.Patch(color='red', label='infectious')
     blue_patch = mpatches.Patch(color='blue', label='suspectible')
     pink_patch = mpatches.Patch(color='pink', label='exposed')
+    red_patch = mpatches.Patch(color='red', label='infectious')
     green_patch = mpatches.Patch(color='green', label='recovered')
-
-    plt.legend(handles=[red_patch, blue_patch])
+    patches = [red_patch, blue_patch, pink_patch, green_patch]
+    plt.legend(handles=patches)
     plt.axis('off')
     plt.xlim((0, 16000))
     plt.ylim((0, 16000))
@@ -130,9 +137,9 @@ def main():
             x.append(student.currentPosition[0])
             y.append(student.currentPosition[0])
             c.append(my_color(student))
-            s.append(8)
+            s.append(15)
     global txt, dots
-    dots= ax.scatter(x, y, color=c, s=s, cmap="bwr")
+    dots= ax.scatter(x, y, color=c, s=s)
     ax.set_xlabel('x', fontsize=14)
     ax.set_ylabel('y', fontsize=14)
     cur = []
@@ -144,14 +151,19 @@ def main():
     ani = animation.FuncAnimation(fig=fig, func=update, frames=len(Combined_times), interval=0.1)
     img = cv2.imread("map.png")
     plt.imshow(img, extent=[0, 16000, 0, 16000])
-    ani.save('Simulation.mp4', writer="ffmpeg", fps=60)
+    ani.save(parser.f + '.mp4', writer="ffmpeg", fps=5)
     plt.show()
     #print(np.array(Combined_times))
     #print(Combined_times)
     #print(State_count)
     CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
     #print(CSV_STACK)
-    np.savetxt("out.csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
+    np.savetxt(parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", type=int, help="num of students", default=3000)
+    parser.add_argument("-i", type=int, help="num of infectious students", default = 1)
+    parser.add_argument("-d", type=int, help="num of days", required=True)
+    parser.add_argument("-f", type=str, help="filename", required=True)
+    main(parser.parse_args())
