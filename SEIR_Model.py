@@ -4,9 +4,9 @@ class SEIR_Model:
 
 	STATES = ['SUSCEPTIBLE', 'EXPOSED', 'INFECTIOUS', 'RECOVERED', 'DEAD']
 	SYMPTOMATIC_TRANS_PROB = 1.70834e-4
-	ASYMPTOMATIC_TRANS_PROB = 1.70834e-4
+	ASYMPTOMATIC_TRANS_PROB = 1.70834e-4/2
 	SYMPTOMATIC_PROB = 1.70834e-4 #0.0205 / 120 (1/min)
-	DEAD_PROB = 5.47869e-2 # 43.5 / 794 (1/day)
+	DEAD_PROB = 5.47869e-2/4.5 # 43.5 / 794 (1/day) 3~6days is the infectious period
 
 	@staticmethod
 	def getRandomLatentPeriod(): # E -> I 潛藏期

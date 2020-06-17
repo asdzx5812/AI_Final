@@ -215,10 +215,10 @@ class HealthState:
 			self.currentProb = SEIR_Model.SYMPTOMATIC_TRANS_PROB
 
 		if self.state == 'EXPOSED' and self.InfectedDays > self.latentPeriod:
-			self.state = 'CONTAGIOUS'
+			self.state = 'INFECTIOUS'
 			self.currentPeriod = 0
 
-		elif self.state == 'CONTAGIOUS' and self.InfectedDays > self.latentPeriod + self.contagiousPeriod:
+		elif self.state == 'INFECTIOUS' and self.InfectedDays > self.latentPeriod + self.contagiousPeriod:
 			if random.random() <= SEIR_Model.DEATH_PROB:
 				self.state = 'DEAD'
 			else:
