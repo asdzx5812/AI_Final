@@ -1,4 +1,5 @@
-import folium
+# no need for folium and can't run on workstation
+#import folium
 import numpy
 import math
 import matplotlib.pyplot as plt
