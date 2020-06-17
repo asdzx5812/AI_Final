@@ -219,7 +219,7 @@ class HealthState:
 			self.currentPeriod = 0
 
 		elif self.state == 'INFECTIOUS' and self.InfectedDays > self.latentPeriod + self.contagiousPeriod:
-			if random.random() <= SEIR_Model.DEATH_PROB:
+			if random.random() <= SEIR_Model.DEAD_PROB:
 				self.state = 'DEAD'
 			else:
 				self.state = 'RECOVERED'
