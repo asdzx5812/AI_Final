@@ -1,7 +1,11 @@
 import random
 import mapmodule
+import logging
 import numpy as np
 from Time import Time
+
+logging.basicConfig(level=logging.INFO)
+
 
 INF = 9999999999999999999
 
@@ -266,10 +270,10 @@ class Student:
 				#print ("!!!!!!", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].name)
 				if (self.schedule.nextDestIdx < self.schedule.numDestPoints and self.currentPointID == self.schedule.destPointsID[day][self.schedule.nextDestIdx]) \
 					or (self.currentPointID == self.schedule.endPointID): # 到教室了
-					print ("Reach the point!!")
+					logging.debug("Reach the point!!")
 					break
 				else:
-					print ("Turn to", self.currentPointID, MAP.point_list[self.currentPointID].name)
+					logging.debug("Turn to", self.currentPointID, MAP.point_list[self.currentPointID].name)
 			
 			else: # delta_distance < left_distance_to_next_point
 				#assert ((self.currentDirection == (MAP.point_list[self.nextPointID].position - self.currentPosition) / np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition)).all())
@@ -282,8 +286,8 @@ class Student:
 	def Action(self, CURRENT_TIME, day):
 
 		if CURRENT_TIME in CLASS_END_TIME:
-			print ("==========================", CURRENT_TIME, "===================================")
-			self.printPositionInfo(day)
+			logging.debug(("=====================", CURRENT_TIME, "============================"))
+			# self.printPositionInfo(day)
 
 		#print (CURRENT_TIME, self.schedule.startTime)
 		if Time.compare(CURRENT_TIME, '==', self.schedule.startTime): # 到學校了
@@ -313,7 +317,7 @@ class Student:
 			if (self.schedule.nextDestIdx < self.schedule.numDestPoints and self.currentPointID == self.schedule.destPointsID[day][self.schedule.nextDestIdx]) \
 				or (self.currentPointID == self.schedule.endPointID): # 到教室了/要離開學校了
 				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
-					print ("Reach the classroom!! --", CURRENT_TIME)
+					logging.debug("Reach the classroom!! --", CURRENT_TIME)
 					self.scheduleState = 'INCLASS'
 					offset_x = MAP.point_list[self.currentPointID].offset[0]
 					offset_y = MAP.point_list[self.currentPointID].offset[1]
@@ -321,7 +325,7 @@ class Student:
 					self.currentPosition[1] += random.uniform(offset_y, -offset_y)
 					
 				else :
-					print ("Bye bye!! --", CURRENT_TIME)
+					logging.debug("Bye bye!! --", CURRENT_TIME)
 					self.scheduleState = 'NULL'
 				#print (MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].position)
 				self.currentSpeed = 0.0
@@ -338,10 +342,10 @@ class Student:
 		elif self.scheduleState == 'INCLASS':
 
 			if CURRENT_TIME in CLASS_END_TIME: # 下課了
-				print ("Class ends --", CURRENT_TIME)
+				logging.debug("Class ends --", CURRENT_TIME)
 			
 				if self.hasNextClass(CURRENT_TIME, day): # 下節有課
-					print ("I have next class :", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].name)
+					logging.debug("I have next class :", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].name)
 					idx = self.schedule.nextDestIdx
 					if self.schedule.destPointsID[day][idx] != self.schedule.destPointsID[day][idx-1]: # 下節課不同教室
 						self.currentPosition = (MAP.point_list[self.currentPointID].position).copy()
@@ -378,13 +382,6 @@ if __name__ == '__main__':
 
 	day = 0
 	student = Student()
-	student.print(day)
-	# while Time.compare(student.schedule.destTimes[day][0], '>=', '09:10'):
-	# 	student = Student()
-	# for i in range(5):
-	# 	print ("DAY", i+1)
-	# # 	student.print(i)
-
 
 	student = Student()
 
