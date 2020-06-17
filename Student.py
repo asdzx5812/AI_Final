@@ -3,14 +3,16 @@ import mapmodule
 import logging
 import numpy as np
 from Time import Time
+from SEIR_Model import SEIR_Model
 
 logging.basicConfig(level=logging.INFO)
 
+####################################################################################################
+##################################### Constants & Infomations ######################################
+####################################################################################################
 
 INF = 9999999999999999999
-
-HEALTH_STATES = ['HEALTHY', 'INFECTED']
-INFECT_PROB = 1.70834e-4 #0.0205 / 120 (1 /min)
+MOVING_SPEED = 500.0
 
 START_POINTS_ID = [
 	12, # 正門
@@ -71,9 +73,13 @@ CLASS_START_TIME = ['8:10', '9:10', '10:20', '11:20', '12:20', '13:20', '14:20',
 CLASS_END_TIME = ['9:00', '10:00', '11:10', '12:10', '13:10', '14:10', '15:10', '16:20', '17:20', '18:20', '19:15']
 SCHEDULE_STATE = ['IDLE', 'INCLASS', 'MOVING', 'NULL']
 
-MOVING_SPEED = 500.0
-
 MAP = mapmodule.Map()
+
+HEALTH_STATES = ['SUSCEPTIBLE', 'EXPOSED', 'INFECTIOUS', 'RECOVERED', 'DEAD']
+
+####################################################################################################
+########################################## Classes #################################################
+####################################################################################################
 
 class Schedule:
 	def __init__(self, gender, instituteIdx):
@@ -179,24 +185,48 @@ class Schedule:
 		print ('--------------------------')
 
 
+class HealthState:
+	def __init__(self):
+		self.state = 'SUSCEPTIBLE'
+		self.latentPeriod = SEIR_Model.getRandomLatentPeriod() # 潛藏期
+		self.incubationPeriod = SEIR_Model.getRandomIncubationPeriod(self.latentPeriod) # 潛伏期
+		self.contagiousPeriod = SEIR_Model.getRandomContagiousPeriod() # 感染期
+		self.currentInfectedDay = 0
+		self.currentProb = 0
+
+	def newDayCheckState(self):
+
+		if self.state == 'SUSCEPTIBLE':
+			return
+
+		self.currentInfectedDay += 1
+
+		if self.currentInfectedDay <= self.incubationPeriod and random.random() <= SEIR_Model.SYMPTOMATIC_PROB: # 發病
+			self.currentProb = SEIR_Model.SYMPTOMATIC_TRANS_PROB
+
+		if self.state == 'EXPOSED' and self.currentInfectedDay > self.latentPeriod:
+			self.state = 'CONTAGIOUS'
+			self.currentPeriod = 0
+
+		elif self.state == 'CONTAGIOUS' and self.currentInfectedDay > self.latentPeriod + self.contagiousPeriod:
+			if random.random() <= SEIR_Model.DEATH_PROB:
+				self.state = 'DEAD'
+			else:
+				self.state = 'RECOVERED'
+
+
 class Student:
-	def __init__(self, healthState='HEALTHY'):
-		self.gender = self.getRandomGender()
-		self.instituteIdx = self.getRandomInstituteIdx()
-		self.healthState = healthState
-		self.scheduleState = 'NULL' 
+	def __init__(self, healthState='SUSCEPTIBLE'):
+		self.gender = 'male' if random.choice([0, 1]) == 0 else 'female'
+		self.instituteIdx = random.randint(0, len(INSTITUTES_NAME)-1)
+		self.healthState = HealthState()
+		self.scheduleState = 'NULL'
 		self.schedule = Schedule(gender=self.gender, instituteIdx=self.instituteIdx)
 		self.currentPointID = self.schedule.startPointID
 		self.nextPointID = -1
 		self.currentPosition = (MAP.point_list[self.schedule.startPointID].position).copy() # shallow copy
 		self.currentSpeed = 0.0
 		self.currentDirection = np.array([0.0, 0.0])
-	
-	def getRandomGender(self):
-		return 'male' if random.choice([0, 1]) == 0 else 'female'
-	
-	def getRandomInstituteIdx(self):
-		return random.randint(0, len(INSTITUTES_NAME)-1)
 
 	def print(self, day):
 		print ('--------------Student--------------')
@@ -286,20 +316,13 @@ class Student:
 	def Action(self, CURRENT_TIME, day):
 
 		if CURRENT_TIME in CLASS_END_TIME:
-			logging.debug(("=====================", CURRENT_TIME, "============================"))
+			logging.debug(f'====================={CURRENT_TIME}============================')
 			# self.printPositionInfo(day)
 
-		#print (CURRENT_TIME, self.schedule.startTime)
 		if Time.compare(CURRENT_TIME, '==', self.schedule.startTime): # 到學校了
 			self.scheduleState = 'IDLE'
 			self.currentPointID = self.schedule.startPointID
 			self.currentPosition = (MAP.point_list[self.schedule.startPointID].position).copy()
-
-		#print (CURRENT_TIME, self.schedule.nextDestIdx, self.schedule.numDestPoints, self.currentPointID, self.schedule.endPointID)
-		# if self.schedule.nextDestIdx == self.schedule.numDestPoints and self.currentPointID == self.schedule.endPointID and self.visible: 
-		# 	#print ('Disappear~~~', CURRENT_TIME)
-		# 	self.scheduleState = 'NULL'
-		# 	#self.printPositionInfo(day)
 
 		if self.scheduleState == 'IDLE':
 			if self.hasNextClass(CURRENT_TIME, day) or (self.schedule.nextDestIdx == self.schedule.numDestPoints and self.timeToLeave(CURRENT_TIME)): # 該上課了
@@ -317,7 +340,7 @@ class Student:
 			if (self.schedule.nextDestIdx < self.schedule.numDestPoints and self.currentPointID == self.schedule.destPointsID[day][self.schedule.nextDestIdx]) \
 				or (self.currentPointID == self.schedule.endPointID): # 到教室了/要離開學校了
 				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
-					logging.debug("Reach the classroom!! --", CURRENT_TIME)
+					logging.debug(f'Reach the classroom!! --{CURRENT_TIME}')
 					self.scheduleState = 'INCLASS'
 					offset_x = MAP.point_list[self.currentPointID].offset[0]
 					offset_y = MAP.point_list[self.currentPointID].offset[1]
@@ -325,18 +348,15 @@ class Student:
 					self.currentPosition[1] += random.uniform(offset_y, -offset_y)
 					
 				else :
-					logging.debug("Bye bye!! --", CURRENT_TIME)
+					logging.debug(f'Bye bye!! --{CURRENT_TIME}')
 					self.scheduleState = 'NULL'
-				#print (MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].position)
+				
 				self.currentSpeed = 0.0
 				self.currentDirection = np.array([0.0, 0.0])
 				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
 					self.schedule.nextDestIdx += 1
 
-				# print ('-->')
-				# self.printPositionInfo(day)
-
-				if self.healthState == 'INFECTED':
+				if self.healthState == 'INFECTIOUS':
 					MAP.point_list[self.currentPointID].infect_prob += INFECT_PROB
 
 		elif self.scheduleState == 'INCLASS':
@@ -355,27 +375,29 @@ class Student:
 						self.currentSpeed = MOVING_SPEED + random.uniform(50, -50)
 						self.currentDirection = (MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]).copy()
 					
-						if self.healthState == 'INFECT':
-							MAP.point_list[self.currentPointID].infect_prob -= INFECT_PROB
+						if self.healthState.state == 'INFECTIOUS':
+							MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
 
 					else: # 下節同教室
 						self.schedule.nextDestIdx += 1
 
-				else:
+				else: # 下節沒課
 					self.currentPosition = (MAP.point_list[self.currentPointID].position).copy()
 					self.scheduleState = 'IDLE'
 
-					if self.healthState == 'INFECT':
-						MAP.point_list[self.currentPointID].infect_prob -= INFECT_PROB
+					if self.healthState == 'INFECTIOUS':
+						MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
 
-			else:
-
+			else: # 上課中
 				infect_prob = MAP.point_list[self.currentPointID].infect_prob
-				if infect_prob > 0 and self.healthState == 'HEALTHY':
+				if infect_prob > 0 and self.healthState == 'SUSCEPTIBLE':
 					if random.random() <= infect_prob:
-						self.healthState = 'INFECTED'
-						MAP.point_list[self.currentPointID].infect_prob += INFECT_PROB
+						self.healthState = 'INFECTIOUS'
+			
 
+	def newDayInit(self, day):
+		self.schedule.newDayInit(day)
+		self.healthState.newDayCheckState()
 
 
 if __name__ == '__main__':
@@ -387,7 +409,7 @@ if __name__ == '__main__':
 
 	for day in range(5):
 		print ("day", day)
-		student.schedule.newDayInit(day)
+		student.newDayInit(day)
 		student.print(day)
 		CURRENT_TIME = '07:40'
 		while Time.compare(CURRENT_TIME, '<=', '20:00'):

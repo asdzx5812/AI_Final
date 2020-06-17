@@ -190,7 +190,7 @@ class Map():
 
 if __name__ == '__main__':
     MAP = Map()
-    print (MAP.point_list[31].position, MAP.point_list[30].position)
-    print (MAP.point_list[31].unit_vec[30])
+    print (MAP.point_list[15].position, MAP.point_list[16].position)
+    print (MAP.point_list[15].unit_vec[16])
 
 
