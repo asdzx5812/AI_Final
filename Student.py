@@ -186,29 +186,39 @@ class Schedule:
 
 
 class HealthState:
-	def __init__(self):
-		self.state = 'SUSCEPTIBLE'
+	def __init__(self, healthState):
+		self.state = healthState
 		self.latentPeriod = SEIR_Model.getRandomLatentPeriod() # 潛藏期
 		self.incubationPeriod = SEIR_Model.getRandomIncubationPeriod(self.latentPeriod) # 潛伏期
 		self.contagiousPeriod = SEIR_Model.getRandomContagiousPeriod() # 感染期
-		self.currentInfectedDay = 0
+		self.InfectedDays = 0
 		self.currentProb = 0
+
+	def print(self):
+		print ('---------HealthState---------')
+		print ('state :', self.state)
+		print ('latentPeriod :', self.latentPeriod)
+		print ('incubationPeriod :', self.incubationPeriod)
+		print ('contagiousPeriod :', self.contagiousPeriod)
+		print ('InfectedDays :', self.InfectedDays)
+		print ('currentProb :', self.currentProb)
+		print ('-----------------------------')
 
 	def newDayCheckState(self):
 
 		if self.state == 'SUSCEPTIBLE':
 			return
 
-		self.currentInfectedDay += 1
+		self.InfectedDays += 1
 
-		if self.currentInfectedDay <= self.incubationPeriod and random.random() <= SEIR_Model.SYMPTOMATIC_PROB: # 發病
+		if self.InfectedDays <= self.incubationPeriod and random.random() <= SEIR_Model.SYMPTOMATIC_PROB: # 發病
 			self.currentProb = SEIR_Model.SYMPTOMATIC_TRANS_PROB
 
-		if self.state == 'EXPOSED' and self.currentInfectedDay > self.latentPeriod:
+		if self.state == 'EXPOSED' and self.InfectedDays > self.latentPeriod:
 			self.state = 'CONTAGIOUS'
 			self.currentPeriod = 0
 
-		elif self.state == 'CONTAGIOUS' and self.currentInfectedDay > self.latentPeriod + self.contagiousPeriod:
+		elif self.state == 'CONTAGIOUS' and self.InfectedDays > self.latentPeriod + self.contagiousPeriod:
 			if random.random() <= SEIR_Model.DEATH_PROB:
 				self.state = 'DEAD'
 			else:
@@ -219,7 +229,7 @@ class Student:
 	def __init__(self, healthState='SUSCEPTIBLE'):
 		self.gender = 'male' if random.choice([0, 1]) == 0 else 'female'
 		self.instituteIdx = random.randint(0, len(INSTITUTES_NAME)-1)
-		self.healthState = HealthState()
+		self.healthState = HealthState(healthState)
 		self.scheduleState = 'NULL'
 		self.schedule = Schedule(gender=self.gender, instituteIdx=self.instituteIdx)
 		self.currentPointID = self.schedule.startPointID
@@ -232,7 +242,7 @@ class Student:
 		print ('--------------Student--------------')
 		print ('gender :', self.gender)
 		print ('institute :', INSTITUTES_ID[self.instituteIdx], INSTITUTES_NAME[self.instituteIdx])
-		print ('healthState :', self.healthState)
+		self.healthState.print()
 		print ('scheduleState :', self.scheduleState)
 		self.schedule.print(day)
 		print ('currentPoint :', self.currentPointID, MAP.point_list[self.currentPointID].name)
