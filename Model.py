@@ -10,6 +10,7 @@ import mapmodule
 import cv2
 
 Health_state = ["SUSCEPTIBLE", "EXPOSED", "INFECTIOUS", "RECOVERED", "DEAD"]
+CLASS_END_TIME = ['09:00', '10:00', '11:10', '12:10', '13:10', '14:10', '15:10', '16:20', '17:20', '18:20', '19:15']
 
 def my_color(s):
     if s.healthState.state == Health_state[0]:
@@ -27,9 +28,8 @@ def update(num):
     global dots
     global txt
     
-    print(num)
+    
     pos = []
-    print(Combined_times[num][0], Combined_times[num][1], np.sum([student.healthState.state == "INFECTED"for student in Students]))
     day = Combined_times[num][1] % 5
     for student in Students:
         if num != 0 and Combined_times[num][1] != Combined_times[num-1][1]:
@@ -42,8 +42,11 @@ def update(num):
         cur.append( np.sum([student.healthState.state == Health_state[i] for student in Students]) )
         State_count.append(cur[i])
     cur=np.array(cur).astype(str)
-    print(cur)
-    
+    if Combined_times[num][0] in CLASS_END_TIME:
+        print(num)
+        print(Combined_times[num][0], Combined_times[num][1], np.sum([student.healthState.state == "INFECTED"for student in Students]))
+        print(cur)
+        
     txt.set_text('Time={}, Days={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[num][0], Combined_times[num][1], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
     #print(new_x.shape)
     #print(new_y.shape)A[:, None]
@@ -87,15 +90,15 @@ def main():
     global Students
     global State_count
     start_time = "07:30"
-    end_time = "08:00"
-    days = 1
-    Healthy_num = 2
+    end_time = "20:00"
+    days = 15
+    Healthy_num = 3000
     Infected_num = 1
     
     Combined_times = Def_Times(start_time, end_time, days)    
     Students = Create_Students(Healthy_num, Infected_num)
-    for s in Students:
-        print(s.healthState.state)
+    # for s in Students:
+    #     print(s.healthState.state)
     State_count = []
 
     for i in range(len(Health_state)):

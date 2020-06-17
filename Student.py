@@ -69,8 +69,8 @@ RESTAURANTS_ID = [
 	9  # 大一女
 ]
 
-CLASS_START_TIME = ['8:10', '9:10', '10:20', '11:20', '12:20', '13:20', '14:20', '15:30', '16:30', '17:30', '18:25']
-CLASS_END_TIME = ['9:00', '10:00', '11:10', '12:10', '13:10', '14:10', '15:10', '16:20', '17:20', '18:20', '19:15']
+CLASS_START_TIME = ['08:10', '09:10', '10:20', '11:20', '12:20', '13:20', '14:20', '15:30', '16:30', '17:30', '18:25']
+CLASS_END_TIME = ['09:00', '10:00', '11:10', '12:10', '13:10', '14:10', '15:10', '16:20', '17:20', '18:20', '19:15']
 SCHEDULE_STATE = ['IDLE', 'INCLASS', 'MOVING', 'NULL']
 
 MAP = mapmodule.Map()
@@ -192,7 +192,7 @@ class HealthState:
 		self.incubationPeriod = SEIR_Model.getRandomIncubationPeriod(self.latentPeriod) # 潛伏期
 		self.contagiousPeriod = SEIR_Model.getRandomContagiousPeriod() # 感染期
 		self.InfectedDays = 0
-		self.currentProb = 0
+		self.currentProb = SEIR_Model.ASYMPTOMATIC_TRANS_PROB if healthState == 'INFECTIOUS' else 0
 
 	def print(self):
 		print ('---------HealthState---------')
@@ -301,11 +301,15 @@ class Student:
 				delta_distance -= left_distance_to_next_point
 
 				self.currentPointID = self.nextPointID
+				tmp = self.currentPosition
 				self.currentPosition = (MAP.point_list[self.currentPointID].position).copy()
+				del (tmp)
 				self.nextPointID = self.findNearestPointID(day)
 
 				#print ("id ~ ", self.currentPointID, MAP.point_list[self.currentPointID].name, '->', self.nextPointID,  MAP.point_list[self.nextPointID].name)
+				tmp = self.currentDirection
 				self.currentDirection = (MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]).copy()
+				del (tmp)
 
 				#print ("!!!!!!", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].name)
 				if (self.schedule.nextDestIdx < self.schedule.numDestPoints and self.currentPointID == self.schedule.destPointsID[day][self.schedule.nextDestIdx]) \
@@ -336,14 +340,18 @@ class Student:
 		if Time.compare(CURRENT_TIME, '==', self.schedule.startTime): # 到學校了
 			self.scheduleState = 'IDLE'
 			self.currentPointID = self.schedule.startPointID
+			tmp = self.currentPosition
 			self.currentPosition = (MAP.point_list[self.schedule.startPointID].position).copy()
+			del (tmp)
 
 		if self.scheduleState == 'IDLE':
 			if self.hasNextClass(CURRENT_TIME, day) or (self.schedule.nextDestIdx == self.schedule.numDestPoints and self.timeToLeave(CURRENT_TIME)): # 該上課了
 				self.scheduleState = 'MOVING'
 				self.nextPointID = self.findNearestPointID(day)
 				self.currentSpeed = MOVING_SPEED + random.uniform(-50, 50)
+				tmp = self.currentDirection
 				self.currentDirection = (MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]).copy()
+				del (tmp)
 			else:
 				pass
 
@@ -353,7 +361,7 @@ class Student:
 
 			if (self.schedule.nextDestIdx < self.schedule.numDestPoints and self.currentPointID == self.schedule.destPointsID[day][self.schedule.nextDestIdx]) \
 				or (self.currentPointID == self.schedule.endPointID): # 到教室了/要離開學校了
-				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
+				if self.schedule.nextDestIdx < self.schedule.numDestPoints: # 到教室了
 					logging.debug(f'Reach the classroom!! --{CURRENT_TIME}')
 					self.scheduleState = 'INCLASS'
 					offset_x = MAP.point_list[self.currentPointID].offset[0]
@@ -364,15 +372,16 @@ class Student:
 				else :
 					logging.debug(f'Bye bye!! --{CURRENT_TIME}')
 					self.scheduleState = 'NULL'
-				
+					return
+
 				self.currentSpeed = 0.0
 				self.currentDirection = np.array([0.0, 0.0])
 				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
 					self.schedule.nextDestIdx += 1
 
-				if self.healthState == 'INFECTIOUS':
-					MAP.point_list[self.currentPointID].infect_prob += INFECT_PROB
-
+				if self.healthState.state == 'INFECTIOUS':
+					MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb
+					
 		elif self.scheduleState == 'INCLASS':
 
 			if CURRENT_TIME in CLASS_END_TIME: # 下課了
@@ -382,13 +391,17 @@ class Student:
 					logging.debug("I have next class :", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].name)
 					idx = self.schedule.nextDestIdx
 					if self.schedule.destPointsID[day][idx] != self.schedule.destPointsID[day][idx-1]: # 下節課不同教室
+						tmp = self.currentPosition
 						self.currentPosition = (MAP.point_list[self.currentPointID].position).copy()
+						del (tmp)
 						self.scheduleState = 'MOVING'
 
 						self.nextPointID = self.findNearestPointID(day)
 						self.currentSpeed = MOVING_SPEED + random.uniform(50, -50)
+						tmp = self.currentDirection
 						self.currentDirection = (MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]).copy()
-					
+						del (tmp)
+
 						if self.healthState.state == 'INFECTIOUS':
 							MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
 
@@ -396,17 +409,19 @@ class Student:
 						self.schedule.nextDestIdx += 1
 
 				else: # 下節沒課
+					tmp = self.currentPosition
 					self.currentPosition = (MAP.point_list[self.currentPointID].position).copy()
+					del (tmp)
 					self.scheduleState = 'IDLE'
 
-					if self.healthState == 'INFECTIOUS':
+					if self.healthState.state == 'INFECTIOUS':
 						MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
 
 			else: # 上課中
 				infect_prob = MAP.point_list[self.currentPointID].infect_prob
-				if infect_prob > 0 and self.healthState == 'SUSCEPTIBLE':
+				if infect_prob > 0 and self.healthState.state == 'SUSCEPTIBLE':
 					if random.random() <= infect_prob:
-						self.healthState = 'INFECTIOUS'
+						self.healthState.state = 'EXPOSED'
 			
 
 	def newDayInit(self, day):
@@ -417,9 +432,7 @@ class Student:
 if __name__ == '__main__':
 
 	day = 0
-	student = Student()
-
-	student = Student()
+	student = Student('INFECTIOUS')
 
 	for day in range(5):
 		print ("day", day)
@@ -427,9 +440,14 @@ if __name__ == '__main__':
 		student.print(day)
 		CURRENT_TIME = '07:40'
 		while Time.compare(CURRENT_TIME, '<=', '20:00'):
-			# if CURRENT_TIME in CLASS_END_TIME:
-			# 	print (CURRENT_TIME)
+			if CURRENT_TIME in CLASS_END_TIME:
+				print (CURRENT_TIME)
 			student.Action(CURRENT_TIME, day)
+
+			for point in MAP.point_list:
+				if point.infect_prob > 0:
+					print ("!!!", point.name, point.infect_prob)
+
 			if student.scheduleState != 'NULL':
 			# show him/her on the map
 				pass
