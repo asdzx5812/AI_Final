@@ -10,6 +10,7 @@ import mapmodule
 import cv2
 
 Health_state = ["SUSCEPTIBLE", "EXPOSED", "INFECTIOUS", "RECOVERED", "DEAD"]
+CLASS_END_TIME = ['09:00', '10:00', '11:10', '12:10', '13:10', '14:10', '15:10', '16:20', '17:20', '18:20', '19:15']
 
 def my_color(s):
     if s.healthState.state == Health_state[0]:
@@ -27,6 +28,10 @@ def update(num):
     global dots
     global txt
     
+<<<<<<< HEAD
+=======
+    
+>>>>>>> d7919132ffafd4598e7117100dd54e46d3802612
     pos = []
     day = Combined_times[num][1] % 5
     for student in Students:
@@ -43,11 +48,19 @@ def update(num):
         except:
             State_count[i].append(cur[i])
     cur=np.array(cur).astype(str)
+<<<<<<< HEAD
     if num % 10 == 0:
         print("frame:", num)
         print("days:", Combined_times[num][0], "time:s",Combined_times[num][1], "infectious:",np.sum([student.healthState.state == "INFECTIOS"for student in Students]))
         print(list(zip(Health_state,cur)))
     
+=======
+    if Combined_times[num][0] in CLASS_END_TIME:
+        print(num)
+        print(Combined_times[num][0], Combined_times[num][1], np.sum([student.healthState.state == "INFECTED"for student in Students]))
+        print(cur)
+        
+>>>>>>> d7919132ffafd4598e7117100dd54e46d3802612
     txt.set_text('Time={}, Days={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[num][0], Combined_times[num][1], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
     #print(new_x.shape)
     #print(new_y.shape)A[:, None]
@@ -92,14 +105,24 @@ def main():
     global State_count
     start_time = "07:30"
     end_time = "20:00"
+<<<<<<< HEAD
     days = 5
     Healthy_num = 2999
+=======
+    days = 15
+    Healthy_num = 3000
+>>>>>>> d7919132ffafd4598e7117100dd54e46d3802612
     Infected_num = 1
     
     Combined_times = Def_Times(start_time, end_time, days)    
     Students = Create_Students(Healthy_num, Infected_num)
+<<<<<<< HEAD
     #/for s in Students:
     #    print(s.healthState.state)
+=======
+    # for s in Students:
+    #     print(s.healthState.state)
+>>>>>>> d7919132ffafd4598e7117100dd54e46d3802612
     State_count = []
 
     for i in range(len(Health_state)):
@@ -143,7 +166,7 @@ def main():
     plt.imshow(img, extent=[0, 16000, 0, 16000])
     ani.save('Simulation.mp4', writer="ffmpeg", fps=60)
     plt.show()
-#    print(np.array(Combined_times))
+    #print(np.array(Combined_times))
     #print(Combined_times)
     #print(State_count)
     CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
