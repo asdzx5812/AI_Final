@@ -288,6 +288,7 @@ class Student:
 		#print (CURRENT_TIME, self.schedule.startTime)
 		if Time.compare(CURRENT_TIME, '==', self.schedule.startTime): # 到學校了
 			self.scheduleState = 'IDLE'
+			self.currentPointID = self.schedule.startPointID
 			self.currentPosition = (MAP.point_list[self.schedule.startPointID].position).copy()
 
 		#print (CURRENT_TIME, self.schedule.nextDestIdx, self.schedule.numDestPoints, self.currentPointID, self.schedule.endPointID)
@@ -385,17 +386,22 @@ if __name__ == '__main__':
 	# # 	student.print(i)
 
 
-	last_state = 'AAA'
-	CURRENT_TIME = '07:40'
-	while Time.compare(CURRENT_TIME, '<=', '20:00'):
-		#print ('===================================================================', CURRENT_TIME)
-		student.Action(CURRENT_TIME, day)
-		# if student.scheduleState != last_state:
-		# 	print ("CURRENT_TIME :", CURRENT_TIME)
-		# 	student.printPositionInfo(day)
-		last_state = student.scheduleState
-		CURRENT_TIME = Time.addMinutes(CURRENT_TIME, 1)
+	student = Student()
 
-
-
+	for day in range(5):
+		print ("day", day)
+		student.schedule.newDayInit(day)
+		student.print(day)
+		CURRENT_TIME = '07:40'
+		while Time.compare(CURRENT_TIME, '<=', '20:00'):
+			# if CURRENT_TIME in CLASS_END_TIME:
+			# 	print (CURRENT_TIME)
+			student.Action(CURRENT_TIME, day)
+			if student.scheduleState != 'NULL':
+			# show him/her on the map
+				pass
+			else:
+				# hide him/her on the map
+				pass
+			CURRENT_TIME = Time.addMinutes(CURRENT_TIME, 1)
 
