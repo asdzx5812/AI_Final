@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://rawcdn.githack.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css"/>
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_608bd857565a483294a1fbc8ed70e2ef {
+                    position: relative;
+                    width: 100.0%;
+                    height: 980.0px;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>    
+    
+            <div class="folium-map" id="map_608bd857565a483294a1fbc8ed70e2ef" ></div>
+        
+</body>
+<script>    
+    
+            var map_608bd857565a483294a1fbc8ed70e2ef = L.map(
+                "map_608bd857565a483294a1fbc8ed70e2ef",
+                {
+                    center: [25.017767, 121.540589],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 17,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_8fe198988a414ac0b7501fd8563879ce = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var marker_ef387dfc29d243dc83db225cc000d29c = L.marker(
+                [25.019462, 121.541579],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_6b1dec4f9ccb45628cf4ebc7ed864391 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_ef387dfc29d243dc83db225cc000d29c.setIcon(icon_6b1dec4f9ccb45628cf4ebc7ed864391);
+        
+    
+        var popup_29fc279fc56a46cca8c8d93d9157f776 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_41f6783fd1a24bfe828d27f859e5e7ff = $(`<div id="html_41f6783fd1a24bfe828d27f859e5e7ff" style="width: 100.0%; height: 100.0%;">德田館</div>`)[0];
+            popup_29fc279fc56a46cca8c8d93d9157f776.setContent(html_41f6783fd1a24bfe828d27f859e5e7ff);
+        
+
+        marker_ef387dfc29d243dc83db225cc000d29c.bindPopup(popup_29fc279fc56a46cca8c8d93d9157f776)
+        ;
+
+        
+    
+    
+            var marker_ab5b53e872c540a9bcbf9f55f4a5c817 = L.marker(
+                [25.017959, 121.536782],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_2f96b7cd440d44eead0dd90bf5a8478b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_ab5b53e872c540a9bcbf9f55f4a5c817.setIcon(icon_2f96b7cd440d44eead0dd90bf5a8478b);
+        
+    
+        var popup_2df8257ab75445a39dc6471a9f018b55 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_69448d7a1d914d13b75af3cca3c4d7e6 = $(`<div id="html_69448d7a1d914d13b75af3cca3c4d7e6" style="width: 100.0%; height: 100.0%;">文學院</div>`)[0];
+            popup_2df8257ab75445a39dc6471a9f018b55.setContent(html_69448d7a1d914d13b75af3cca3c4d7e6);
+        
+
+        marker_ab5b53e872c540a9bcbf9f55f4a5c817.bindPopup(popup_2df8257ab75445a39dc6471a9f018b55)
+        ;
+
+        
+    
+    
+            var marker_45b56284a28c465c90d111848d8775cc = L.marker(
+                [25.018944, 121.5405067],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_bd12d123f8d3468cbc7fd6201d390137 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_45b56284a28c465c90d111848d8775cc.setIcon(icon_bd12d123f8d3468cbc7fd6201d390137);
+        
+    
+        var popup_a0cbd1ce17bb4f6b908e775d55ef6bd5 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_dd1f4676ccec4478a1703679436c365a = $(`<div id="html_dd1f4676ccec4478a1703679436c365a" style="width: 100.0%; height: 100.0%;">工綜</div>`)[0];
+            popup_a0cbd1ce17bb4f6b908e775d55ef6bd5.setContent(html_dd1f4676ccec4478a1703679436c365a);
+        
+
+        marker_45b56284a28c465c90d111848d8775cc.bindPopup(popup_a0cbd1ce17bb4f6b908e775d55ef6bd5)
+        ;
+
+        
+    
+    
+            var marker_5a300498ab7c4ab7928612b73fb8996f = L.marker(
+                [25.0139, 121.538],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_58db7021963646e4ab3e9cad6aa7eb60 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_5a300498ab7c4ab7928612b73fb8996f.setIcon(icon_58db7021963646e4ab3e9cad6aa7eb60);
+        
+    
+        var popup_5f5de0de565b46b89cb4c20f8e674192 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_4ae27e51f6c84d91bc34a6a196c40d8f = $(`<div id="html_4ae27e51f6c84d91bc34a6a196c40d8f" style="width: 100.0%; height: 100.0%;">管一</div>`)[0];
+            popup_5f5de0de565b46b89cb4c20f8e674192.setContent(html_4ae27e51f6c84d91bc34a6a196c40d8f);
+        
+
+        marker_5a300498ab7c4ab7928612b73fb8996f.bindPopup(popup_5f5de0de565b46b89cb4c20f8e674192)
+        ;
+
+        
+    
+    
+            var marker_319e7398d38f4701b7e085f793121cc7 = L.marker(
+                [25.016219, 121.537929],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_e535fac19f5f41078335ffd7359d24cd = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_319e7398d38f4701b7e085f793121cc7.setIcon(icon_e535fac19f5f41078335ffd7359d24cd);
+        
+    
+        var popup_079c05c868f645489c480149f653d767 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_00056a13d2dc42c481c9a3cada3e45e8 = $(`<div id="html_00056a13d2dc42c481c9a3cada3e45e8" style="width: 100.0%; height: 100.0%;">生傳系館</div>`)[0];
+            popup_079c05c868f645489c480149f653d767.setContent(html_00056a13d2dc42c481c9a3cada3e45e8);
+        
+
+        marker_319e7398d38f4701b7e085f793121cc7.bindPopup(popup_079c05c868f645489c480149f653d767)
+        ;
+
+        
+    
+    
+            var marker_3b05327aabb4421991f8f37f05763a5f = L.marker(
+                [25.020734, 121.54236],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_8cd50d224bfc4adca96d1e7f97ea9670 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_3b05327aabb4421991f8f37f05763a5f.setIcon(icon_8cd50d224bfc4adca96d1e7f97ea9670);
+        
+    
+        var popup_3fbaa7c61ccc43a68eb0aa5c872ff3b4 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_77f909565b2640bfad9386bb401e0900 = $(`<div id="html_77f909565b2640bfad9386bb401e0900" style="width: 100.0%; height: 100.0%;">社科院</div>`)[0];
+            popup_3fbaa7c61ccc43a68eb0aa5c872ff3b4.setContent(html_77f909565b2640bfad9386bb401e0900);
+        
+
+        marker_3b05327aabb4421991f8f37f05763a5f.bindPopup(popup_3fbaa7c61ccc43a68eb0aa5c872ff3b4)
+        ;
+
+        
+    
+    
+            var marker_dc390fc7fd7047d69052d3698b9254b9 = L.marker(
+                [25.020576, 121.54363],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_d16c0e74ef48410893960826a1eee3f2 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_dc390fc7fd7047d69052d3698b9254b9.setIcon(icon_d16c0e74ef48410893960826a1eee3f2);
+        
+    
+        var popup_0151279409c44e769b826117d3f12a18 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_42a6760a7adb4e3bad161c73de9744bc = $(`<div id="html_42a6760a7adb4e3bad161c73de9744bc" style="width: 100.0%; height: 100.0%;">霖澤館</div>`)[0];
+            popup_0151279409c44e769b826117d3f12a18.setContent(html_42a6760a7adb4e3bad161c73de9744bc);
+        
+
+        marker_dc390fc7fd7047d69052d3698b9254b9.bindPopup(popup_0151279409c44e769b826117d3f12a18)
+        ;
+
+        
+    
+    
+            var marker_ce5e9609a448482a9ae90ca5828fb619 = L.marker(
+                [25.019704, 121.5385],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_448a5e017b3e496aabf4dd6e88461515 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_ce5e9609a448482a9ae90ca5828fb619.setIcon(icon_448a5e017b3e496aabf4dd6e88461515);
+        
+    
+        var popup_205677aa892c4d39b3b9de6a11b1b319 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_bf32fe53802e4846a4ed48c2ec65d7a3 = $(`<div id="html_bf32fe53802e4846a4ed48c2ec65d7a3" style="width: 100.0%; height: 100.0%;">新生</div>`)[0];
+            popup_205677aa892c4d39b3b9de6a11b1b319.setContent(html_bf32fe53802e4846a4ed48c2ec65d7a3);
+        
+
+        marker_ce5e9609a448482a9ae90ca5828fb619.bindPopup(popup_205677aa892c4d39b3b9de6a11b1b319)
+        ;
+
+        
+    
+    
+            var marker_524a14d7aa2646bf910530af8b79ca75 = L.marker(
+                [25.018924, 121.53664],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_72bd757ec9ed48cfaf8ce2b3feaf381c = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_524a14d7aa2646bf910530af8b79ca75.setIcon(icon_72bd757ec9ed48cfaf8ce2b3feaf381c);
+        
+    
+        var popup_30afeaa73a0f43f6b955aa78550987ff = L.popup({"maxWidth": "100%"});
+
+        
+            var html_2c0a2e36e1794a069df71873d866f2f1 = $(`<div id="html_2c0a2e36e1794a069df71873d866f2f1" style="width: 100.0%; height: 100.0%;">博雅</div>`)[0];
+            popup_30afeaa73a0f43f6b955aa78550987ff.setContent(html_2c0a2e36e1794a069df71873d866f2f1);
+        
+
+        marker_524a14d7aa2646bf910530af8b79ca75.bindPopup(popup_30afeaa73a0f43f6b955aa78550987ff)
+        ;
+
+        
+    
+    
+            var marker_9e15df924b3f452d8d1b2677e73cd135 = L.marker(
+                [25.018559, 121.536701],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_4e00f001c4014d5a9200198415caa017 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_9e15df924b3f452d8d1b2677e73cd135.setIcon(icon_4e00f001c4014d5a9200198415caa017);
+        
+    
+        var popup_a5d3db51d58c4ad08d32b77904b2a9a0 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_25e4a26a4cc349cc8e851e1d7110e2cd = $(`<div id="html_25e4a26a4cc349cc8e851e1d7110e2cd" style="width: 100.0%; height: 100.0%;">普通</div>`)[0];
+            popup_a5d3db51d58c4ad08d32b77904b2a9a0.setContent(html_25e4a26a4cc349cc8e851e1d7110e2cd);
+        
+
+        marker_9e15df924b3f452d8d1b2677e73cd135.bindPopup(popup_a5d3db51d58c4ad08d32b77904b2a9a0)
+        ;
+
+        
+    
+    
+            var marker_fe1b552262ea4dbe9c3431bd4832d24d = L.marker(
+                [25.015844, 121.537841],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_ea7bf5e161e149049c44a3bd50481e08 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_fe1b552262ea4dbe9c3431bd4832d24d.setIcon(icon_ea7bf5e161e149049c44a3bd50481e08);
+        
+    
+        var popup_c97596840789436981eb638770779fc8 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_22c88cf615c64afabd6c37ce756736f7 = $(`<div id="html_22c88cf615c64afabd6c37ce756736f7" style="width: 100.0%; height: 100.0%;">共同</div>`)[0];
+            popup_c97596840789436981eb638770779fc8.setContent(html_22c88cf615c64afabd6c37ce756736f7);
+        
+
+        marker_fe1b552262ea4dbe9c3431bd4832d24d.bindPopup(popup_c97596840789436981eb638770779fc8)
+        ;
+
+        
+    
+    
+            var marker_ae101afe63ba4ab5b6f9cc24b10ecd1b = L.marker(
+                [25.021705, 121.535289],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_8aadad7e8da54562921caf2f37d0301b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_ae101afe63ba4ab5b6f9cc24b10ecd1b.setIcon(icon_8aadad7e8da54562921caf2f37d0301b);
+        
+    
+        var popup_232607eb980840898b2d0881fc4f1098 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b409b5c167b342c78da0f02f429dcf5b = $(`<div id="html_b409b5c167b342c78da0f02f429dcf5b" style="width: 100.0%; height: 100.0%;">新體</div>`)[0];
+            popup_232607eb980840898b2d0881fc4f1098.setContent(html_b409b5c167b342c78da0f02f429dcf5b);
+        
+
+        marker_ae101afe63ba4ab5b6f9cc24b10ecd1b.bindPopup(popup_232607eb980840898b2d0881fc4f1098)
+        ;
+
+        
+    
+    
+            var marker_56c070b73b7e42daa2953028d7de4372 = L.marker(
+                [25.019554, 121.539472],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_9f76f58fa1a0458497426596c91951ba = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_56c070b73b7e42daa2953028d7de4372.setIcon(icon_9f76f58fa1a0458497426596c91951ba);
+        
+    
+        var popup_89d42eb848fa4771a363e5da4848fd94 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_6bde87028fc642dd885ec95a4e45c9c1 = $(`<div id="html_6bde87028fc642dd885ec95a4e45c9c1" style="width: 100.0%; height: 100.0%;">女九</div>`)[0];
+            popup_89d42eb848fa4771a363e5da4848fd94.setContent(html_6bde87028fc642dd885ec95a4e45c9c1);
+        
+
+        marker_56c070b73b7e42daa2953028d7de4372.bindPopup(popup_89d42eb848fa4771a363e5da4848fd94)
+        ;
+
+        
+    
+    
+            var marker_79c1f76d394b4b6993a3b8a66076bde7 = L.marker(
+                [25.01681, 121.545216],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_e419fb92d19042a4994d732803d9dcdc = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_79c1f76d394b4b6993a3b8a66076bde7.setIcon(icon_e419fb92d19042a4994d732803d9dcdc);
+        
+    
+        var popup_dbfc70ab136b4ed69eb2ff28114cffd5 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_d89dcf58c0cf4abca26148d74e11131e = $(`<div id="html_d89dcf58c0cf4abca26148d74e11131e" style="width: 100.0%; height: 100.0%;">男六</div>`)[0];
+            popup_dbfc70ab136b4ed69eb2ff28114cffd5.setContent(html_d89dcf58c0cf4abca26148d74e11131e);
+        
+
+        marker_79c1f76d394b4b6993a3b8a66076bde7.bindPopup(popup_dbfc70ab136b4ed69eb2ff28114cffd5)
+        ;
+
+        
+    
+    
+            var marker_46b2063646004a32bbe7e14ccb98ee79 = L.marker(
+                [25.015297, 121.534613],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_3fad6fbc4f724a318913b0aa0e710eb7 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_46b2063646004a32bbe7e14ccb98ee79.setIcon(icon_3fad6fbc4f724a318913b0aa0e710eb7);
+        
+    
+        var popup_125e131acc8d4f229f6a0c3a71b2d907 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_8d771c0675a64e2091aec09c776cce54 = $(`<div id="html_8d771c0675a64e2091aec09c776cce54" style="width: 100.0%; height: 100.0%;">大一女</div>`)[0];
+            popup_125e131acc8d4f229f6a0c3a71b2d907.setContent(html_8d771c0675a64e2091aec09c776cce54);
+        
+
+        marker_46b2063646004a32bbe7e14ccb98ee79.bindPopup(popup_125e131acc8d4f229f6a0c3a71b2d907)
+        ;
+
+        
+    
+    
+            var marker_6b19962e16ea45c5a134e8fe341af364 = L.marker(
+                [25.01806, 121.540098],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_7735e74bd2e24cb19f9ecb59395bf9ed = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_6b19962e16ea45c5a134e8fe341af364.setIcon(icon_7735e74bd2e24cb19f9ecb59395bf9ed);
+        
+    
+        var popup_2048ee3d955c40c1b9c205abf1581882 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_4bf90839039748c895ece6e1ebbc7be3 = $(`<div id="html_4bf90839039748c895ece6e1ebbc7be3" style="width: 100.0%; height: 100.0%;">活大</div>`)[0];
+            popup_2048ee3d955c40c1b9c205abf1581882.setContent(html_4bf90839039748c895ece6e1ebbc7be3);
+        
+
+        marker_6b19962e16ea45c5a134e8fe341af364.bindPopup(popup_2048ee3d955c40c1b9c205abf1581882)
+        ;
+
+        
+    
+    
+            var marker_66103c2f976c4aa0b78243eb7445337d = L.marker(
+                [25.01856, 121.537405],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_0981adacd7bd4ad8a7e74fa0610e88f0 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_66103c2f976c4aa0b78243eb7445337d.setIcon(icon_0981adacd7bd4ad8a7e74fa0610e88f0);
+        
+    
+        var popup_a6d7543c44d34a128b3a2bc7c27be301 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_da948c2547e8468ebb08ea4b198f2f8a = $(`<div id="html_da948c2547e8468ebb08ea4b198f2f8a" style="width: 100.0%; height: 100.0%;">小福</div>`)[0];
+            popup_a6d7543c44d34a128b3a2bc7c27be301.setContent(html_da948c2547e8468ebb08ea4b198f2f8a);
+        
+
+        marker_66103c2f976c4aa0b78243eb7445337d.bindPopup(popup_a6d7543c44d34a128b3a2bc7c27be301)
+        ;
+
+        
+    
+    
+            var marker_ccb0f1f9edbf4935b4038c6b39698ad8 = L.marker(
+                [25.015412, 121.537199],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_b4f98d84e3454b08990c286c7b4ca326 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_ccb0f1f9edbf4935b4038c6b39698ad8.setIcon(icon_b4f98d84e3454b08990c286c7b4ca326);
+        
+    
+        var popup_d57cc8184be846febf2c3d1adede3083 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_99134a216aa443a8abb34c29152e38be = $(`<div id="html_99134a216aa443a8abb34c29152e38be" style="width: 100.0%; height: 100.0%;">小小福</div>`)[0];
+            popup_d57cc8184be846febf2c3d1adede3083.setContent(html_99134a216aa443a8abb34c29152e38be);
+        
+
+        marker_ccb0f1f9edbf4935b4038c6b39698ad8.bindPopup(popup_d57cc8184be846febf2c3d1adede3083)
+        ;
+
+        
+    
+    
+            var marker_cd03f2267b9a458b8611616d9328fff5 = L.marker(
+                [25.0106, 121.5331],
+                {}
+            ).addTo(map_608bd857565a483294a1fbc8ed70e2ef);
+        
+    
+            var icon_1f52bedd143d44b39dee83601275d33a = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_cd03f2267b9a458b8611616d9328fff5.setIcon(icon_1f52bedd143d44b39dee83601275d33a);
+        
+    
+        var popup_90ca41503aa14753af49031fe3440fec = L.popup({"maxWidth": "100%"});
+
+        
+            var html_d65f0797eca0404fac73c84e1cfe31e4 = $(`<div id="html_d65f0797eca0404fac73c84e1cfe31e4" style="width: 100.0%; height: 100.0%;">小小福</div>`)[0];
+            popup_90ca41503aa14753af49031fe3440fec.setContent(html_d65f0797eca0404fac73c84e1cfe31e4);
+        
+
+        marker_cd03f2267b9a458b8611616d9328fff5.bindPopup(popup_90ca41503aa14753af49031fe3440fec)
+        ;
+
+        
+    
+</script>

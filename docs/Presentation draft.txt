@@ -1,0 +1,9 @@
+Hi, everyone! Today, we are going to introduce our model to simulate movements of students in NTU campus to find the trend of infected number of COVID-19. 
+
+Here I’ll briefly illustrate our method: 
+First we’ve calculated the probabilities of infection under different health conditions according to the SEIR model, which is a common model in epidemiology, and set up the whole simulation environment including the campus map, the labeled points, and the paths between them. 
+Secondly, we’ve defined different states for a student, e.g. his health state or schedule state and created 3000 students with their own schedules, which were randomly generated and adjusted according to our personal experiences.
+Lastly, we’ve builded our model to simulate the students’ movement around the campus and observe the infection trends of various time intervals.
+Here are one result of a case of 3000 thousands students with one being infected originally. 
+We can see that the number of infectious student grows exponentially. After 10 days, almost 80 percent of students were being infected. Other details and case comparisons will be discussed in our final report.
+The above is our presentation, thanks for listening.
