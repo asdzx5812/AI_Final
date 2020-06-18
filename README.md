@@ -34,7 +34,7 @@ class Point():
         self.offset = offset
 
 ```
-   
+
 #### Point 編號
 ```
  POINTS = ['管一', '舟山門', '小小福', '小木屋', '舟山路轉折點', # 0~4
@@ -58,7 +58,7 @@ Map裡存的是每個點集合起來的list
   class Map():
       def __init__(self):
           self.point_list = []
-```        
+```
 ### 傳染率計算
 ```
 $R_0$ = 傳染率(每次接觸) * 平均每人每日接觸人數 * 世代
@@ -132,3 +132,13 @@ for day in range(5):
             # hide him/her on the map
     CURRENT_TIME = Time.addMinutes(CURRENT_TIME, 1)
 ```
+
+感染機率: 讓兩節課的感染率=1次接觸的感染率，則每分鐘的感染率為
+
+$(1-p)^{120} = 1-0.0205$,
+
+$\Rightarrow 120*(ln(1-p)) = ln(1-0.0205)\Rightarrow ln(1-p) = ln(1-0.0205)/120$
+
+$\Rightarrow 1-p = e^{ln(1-0.0205)/120}, p = 1-e^{ln(1-0.0205)/120}$ 
+
+$\Rightarrow p = 1.72593784*10^{-4}$
