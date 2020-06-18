@@ -49,8 +49,8 @@ def update(num):
 
     if Combined_times[num][0] in CLASS_END_TIME:
         print(num)
-        print(Combined_times[num][0], Combined_times[num][1], np.sum([student.healthState.state == "INFECTED"for student in Students]))
-        print(cur)
+        print("Day:", Combined_times[num][1], "Time:", Combined_times[num][0])
+        print(list(zip(Health_state, cur)))
         
     txt.set_text('Time={}, Days={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[num][0], Combined_times[num][1], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
     #print(new_x.shape)
@@ -149,16 +149,16 @@ def Ani_main(parser):
 
     #print(x)
     ani = animation.FuncAnimation(fig=fig, func=update, frames=len(Combined_times), interval=0.1)
-    img = cv2.imread("map.png")
+    img = cv2.imread("../map/map.png")
     plt.imshow(img, extent=[0, 16000, 0, 16000])
-    ani.save(parser.f + '.mp4', writer="ffmpeg", fps=90)
+    ani.save("../outputs/" + parser.f + '.mp4', writer="ffmpeg", fps=90)
     plt.show()
     #print(np.array(Combined_times))
     #print(Combined_times)
     #print(State_count)
     CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
     #print(CSV_STACK)
-    np.savetxt(parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
+    np.savetxt("../outputs/" + parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
 
 def No_ani_main(parser):
     global Combined_times
@@ -199,8 +199,7 @@ def No_ani_main(parser):
             print(list(zip(Health_state, cur)))
 
     CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
-    #print(CSV_STACK)
-    np.savetxt(parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
+    np.savetxt("../outputs/" + parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
