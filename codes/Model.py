@@ -96,7 +96,7 @@ def Create_Students(Healthy_num, Infected_num):
     #students.append(b)
     return students
 
-def main(parser):
+def Ani_main(parser):
     global Combined_times
     global Students
     global State_count
@@ -151,11 +151,53 @@ def main(parser):
     ani = animation.FuncAnimation(fig=fig, func=update, frames=len(Combined_times), interval=0.1)
     img = cv2.imread("map.png")
     plt.imshow(img, extent=[0, 16000, 0, 16000])
-    ani.save(parser.f + '.mp4', writer="ffmpeg", fps=5)
+    ani.save(parser.f + '.mp4', writer="ffmpeg", fps=90)
     plt.show()
     #print(np.array(Combined_times))
     #print(Combined_times)
     #print(State_count)
+    CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
+    #print(CSV_STACK)
+    np.savetxt(parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
+
+def No_ani_main(parser):
+    global Combined_times
+    global Students
+    global State_count
+    start_time = "07:30"
+    end_time = "20:00"
+    days = parser.d
+    Healthy_num = parser.n - parser.i
+
+    Infected_num = parser.i
+    
+    Combined_times = Def_Times(start_time, end_time, days)    
+    Students = Create_Students(Healthy_num, Infected_num)
+
+    State_count = []
+    for i in range(len(Health_state)):
+        State_count.append([])
+
+    for num in range(len(Combined_times)):
+        day = Combined_times[num][1]%5
+        time = Combined_times[num][0]
+        for student in Students:
+            if num != 0 and Combined_times[num][1] != Combined_times[num-1][1]:
+                student.newDayInit(day)
+            student.Action(Combined_times[num][0], day)
+        cur = []
+        for i in range(len(Health_state)):
+            cur.append(np.sum([student.healthState.state == Health_state[i] for student in Students]))
+            try:    
+                State_count[i][num] = cur[i]
+            except:
+                State_count[i].append(cur[i])
+    
+        if Combined_times[num][0] in CLASS_END_TIME:
+            print(num)
+            print("Day:", Combined_times[num][1], "Time:", Combined_times[num][0])
+            print(list(zip(Health_state, cur)))
+
     CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
     #print(CSV_STACK)
     np.savetxt(parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
@@ -166,4 +208,8 @@ if __name__ == "__main__":
     parser.add_argument("-i", type=int, help="num of infectious students", default = 1)
     parser.add_argument("-d", type=int, help="num of days", required=True)
     parser.add_argument("-f", type=str, help="filename", required=True)
-    main(parser.parse_args())
+    parser.add_argument("--no-ani", help="No animation", action="store_true")
+    if parser.parse_args().no_ani:
+        No_ani_main(parser.parse_args())
+    else:
+        Ani_main(parser.parse_args())
