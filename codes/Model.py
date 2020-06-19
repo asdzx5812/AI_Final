@@ -102,7 +102,7 @@ def Ani_main(parser):
     global State_count
     start_time = "07:30"
     end_time = "20:00"
-    days = parser.d
+    days = parser.day
     Healthy_num = parser.n - parser.i
 
     Infected_num = parser.i
@@ -152,14 +152,14 @@ def Ani_main(parser):
     ani = animation.FuncAnimation(fig=fig, func=update, frames=len(Combined_times), interval=0.1)
     img = cv2.imread("../map/map.png")
     plt.imshow(img, extent=[0, 16000, 0, 16000])
-    ani.save("../outputs/" + parser.d + "/" + parser.f + '.mp4', writer="ffmpeg", fps=90)
+    ani.save("../outputs/" + parser.dir + "/" + parser.f + '.mp4', writer="ffmpeg", fps=90)
     plt.show()
     #print(np.array(Combined_times))
     #print(Combined_times)
     #print(State_count)
     CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
     #print(CSV_STACK)
-    np.savetxt("../outputs/" + parser.d + "/" + parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
+    np.savetxt("../outputs/" + parser.dir + "/" + parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
 
 def No_ani_main(parser):
     global Combined_times
@@ -167,7 +167,7 @@ def No_ani_main(parser):
     global State_count
     start_time = "07:30"
     end_time = "20:00"
-    days = parser.d
+    days = parser.day
     Healthy_num = parser.n - parser.i
 
     Infected_num = parser.i
@@ -200,15 +200,15 @@ def No_ani_main(parser):
             print(list(zip(Health_state, cur)))
 
     CSV_STACK = np.column_stack((np.array(Combined_times).astype(str), np.array(State_count).astype(str).T))
-    np.savetxt("../outputs/" + parser.d + "/" + parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
+    np.savetxt("../outputs/" + parser.dir + "/" + parser.f + ".csv", np.array(CSV_STACK), fmt="%s" , delimiter=",")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", type=int, help="num of students", default=3000)
     parser.add_argument("-i", type=int, help="num of infectious students", default = 1)
-    parser.add_argument("-d", type=int, help="num of days", required=True, default=10)
+    parser.add_argument("-day", type=int, help="num of days", required=True, default=10)
     parser.add_argument("-f", type=str, help="file name", required=True)
-    parser.add_argument("-d", type=str, help="dir name under AI_Final/outputs/", required=True)
+    parser.add_argument("-dir", type=str, help="dir name under AI_Final/outputs/", required=True)
     parser.add_argument("--no-ani", help="No animation", action="store_true")
     if parser.parse_args().no_ani:
         No_ani_main(parser.parse_args())
