@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
-for i in {1..11}; do
-	echo "python Model.py -i $1 -d 15 -f i$1_${i} --no-ani"
-	python Model.py -i $1 -d 15 -f i$1_${i} --no-ani
+for i in {1..6}; do
+	echo "python3 Model.py -day 10 -i $1 -dir cmp_infection -f i$1_${i} --no-ani"
+	python3 Model.py -i $1 -d 10 -dir cmp_infection -f i$1_${i} --no-ani
 done
 
