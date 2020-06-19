@@ -52,7 +52,7 @@ def update(num):
         print("Day:", Combined_times[num][1], "Time:", Combined_times[num][0])
         print(list(zip(Health_state, cur)))
         
-    txt.set_text('Time={}, Days={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[num][0], Combined_times[num][1], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
+    txt.set_text('Day={}, Time={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[num][1]+1, Combined_times[num][0], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
     #print(new_x.shape)
     #print(new_y.shape)A[:, None]
     #print(pos)
@@ -145,7 +145,7 @@ def Ani_main(parser):
     cur = []
     for i in range(len(Health_state)):
         cur.append( np.sum([student.healthState.state == Health_state[i] for student in Students]) )
-    
+
     txt = fig.suptitle('Day={}, Time={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[0][1] + 1, Combined_times[0][0], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
 
     #print(x)
