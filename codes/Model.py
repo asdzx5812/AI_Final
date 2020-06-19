@@ -122,7 +122,7 @@ def Ani_main(parser):
     red_patch = mpatches.Patch(color='red', label='infectious')
     green_patch = mpatches.Patch(color='green', label='recovered')
     patches = [red_patch, blue_patch, pink_patch, green_patch]
-    plt.legend(handles=patches)
+    plt.legend(loc = "lower left", handles=patches)
     plt.axis('off')
     plt.xlim((0, 16000))
     plt.ylim((0, 16000))
@@ -145,7 +145,8 @@ def Ani_main(parser):
     cur = []
     for i in range(len(Health_state)):
         cur.append( np.sum([student.healthState.state == Health_state[i] for student in Students]) )
-    txt = fig.suptitle('Time={}, Days={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[0][0], Combined_times[0][1], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
+    
+    txt = fig.suptitle('Day={}, Time={}\nsusceptible={}, exposed={}, infectious={} \n recovered={}, dead={}'.format(Combined_times[0][1] + 1, Combined_times[0][0], cur[0], cur[1], cur[2], cur[3], cur[4])) # for debug purposes
 
     #print(x)
     ani = animation.FuncAnimation(fig=fig, func=update, frames=len(Combined_times), interval=0.1)
