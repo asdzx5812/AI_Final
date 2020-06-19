@@ -71,7 +71,7 @@ RESTAURANTS_ID = [
 
 CLASS_START_TIME = ['08:10', '09:10', '10:20', '11:20', '12:20', '13:20', '14:20', '15:30', '16:30', '17:30', '18:25']
 CLASS_END_TIME = ['09:00', '10:00', '11:10', '12:10', '13:10', '14:10', '15:10', '16:20', '17:20', '18:20', '19:15']
-SCHEDULE_STATE = ['IDLE', 'INCLASS', 'MOVING', 'NULL']
+SCHEDULE_STATES = ['IDLE', 'INCLASS', 'MOVING', 'NULL']
 
 MAP = mapmodule.Map()
 
@@ -188,41 +188,66 @@ class Schedule:
 class HealthState:
 	def __init__(self, healthState):
 		self.state = healthState
-		self.latentPeriod = SEIR_Model.getRandomLatentPeriod() # 潛藏期
-		self.incubationPeriod = SEIR_Model.getRandomIncubationPeriod(self.latentPeriod) # 潛伏期
-		self.contagiousPeriod = SEIR_Model.getRandomContagiousPeriod() # 感染期
-		self.InfectedDays = 0
+		self.incubationPeriod = SEIR_Model.getRandomIncubationPeriod() # 潛伏期
+		self.latentPeriod = SEIR_Model.getRandomLatentPeriod(self.incubationPeriod) # 潛藏期
+		self.infectiousPeriod = SEIR_Model.getRandomInfectiousPeriod() # 感染期
+		self.illnessPeriod = SEIR_Model.getRandomIllnessPeriod() # 發病期
+		self.infectedDays = 0
+		self.illnessDays = 0
 		self.currentProb = SEIR_Model.ASYMPTOMATIC_TRANS_PROB if healthState == 'INFECTIOUS' else 0
+		self.quarantined = False
 
 	def print(self):
 		print ('---------HealthState---------')
 		print ('state :', self.state)
 		print ('latentPeriod :', self.latentPeriod)
 		print ('incubationPeriod :', self.incubationPeriod)
-		print ('contagiousPeriod :', self.contagiousPeriod)
-		print ('InfectedDays :', self.InfectedDays)
+		print ('infectiousPeriod :', self.infectiousPeriod)
+		print ('infectedDays :', self.infectedDays)
 		print ('currentProb :', self.currentProb)
+		print ('quarantined :', self.quarantined)
 		print ('-----------------------------')
 
 	def newDayCheckState(self):
 
-		if self.state == 'SUSCEPTIBLE':
+		if self.state == 'SUSCEPTIBLE' or self.state == 'RECOVERED' or self.state == 'DEAD':
 			return
 
-		self.InfectedDays += 1
+		self.infectedDays += 1
+		if self.illnessDays >= 1: 
+			self.illnessDays += 1
 
-		if self.InfectedDays <= self.incubationPeriod and random.random() <= SEIR_Model.SYMPTOMATIC_PROB: # 發病
-			self.currentProb = SEIR_Model.SYMPTOMATIC_TRANS_PROB
-
-		if self.state == 'EXPOSED' and self.InfectedDays > self.latentPeriod:
+		if self.state == 'EXPOSED' and self.infectedDays == self.latentPeriod + 1: # E -> I
 			self.state = 'INFECTIOUS'
-			self.currentPeriod = 0
+			self.currentProb = SEIR_Model.ASYMPTOMATIC_TRANS_PROB
 
-		elif self.state == 'INFECTIOUS' and self.InfectedDays > self.latentPeriod + self.contagiousPeriod:
-			if random.random() <= SEIR_Model.DEAD_PROB:
-				self.state = 'DEAD'
-			else:
+		elif self.state == 'INFECTIOUS':
+			if self.infectedDays <= self.latentPeriod + self.infectiousPeriod:  
+				if random.random() <= SEIR_Model.DEAD_PROB: # 死亡
+					self.state = 'DEAD'
+
+			elif self.infectedDays == self.latentPeriod + self.infectiousPeriod + 1: # I -> R
 				self.state = 'RECOVERED'
+				self.currentProb = 0
+
+			else:
+				assert(False)
+
+
+		if self.infectedDays == self.incubationPeriod + 1: # 潛伏期過了
+			if random.random() <= SEIR_Model.SYMPTOMATIC_PROB: # 發病
+				self.currentProb = SEIR_Model.SYMPTOMATIC_TRANS_PROB
+				self.illnessDays = 1
+				self.quarantined = True if random.random() <= SEIR_Model.QUARANTINE_PROB else False
+
+			else:
+				self.currentProb = SEIR_Model.ASYMPTOMATIC_TRANS_PROB
+
+		elif self.illnessDays == self.illnessPeriod + 3 + 1: # 無症狀了
+			self.illnessDays = 0
+			if self.quarantined:
+				self.quarantined = False
+
 
 
 class Student:
@@ -290,13 +315,9 @@ class Student:
 		delta_distance = np.linalg.norm(self.currentSpeed * self.currentDirection)
 	
 		while delta_distance > 0:
-			# print ('current Point:', self.currentPointID, self.currentPosition, 'next point:',  self.nextPointID, MAP.point_list[self.nextPointID].position)
-			# print ("cur_Dir :", self.currentDirection, 'vs', (MAP.point_list[self.nextPointID].position - self.currentPosition) / np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition))
-				
-			left_distance_to_next_point = np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition)
-			# print ("id :", self.currentPointID, MAP.point_list[self.currentPointID].name, '->', self.nextPointID,  MAP.point_list[self.nextPointID].name)
-			#print ("dis =", delta_distance, left_distance_to_next_point)
 
+			left_distance_to_next_point = np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition)
+			
 			if delta_distance >= left_distance_to_next_point: 
 				delta_distance -= left_distance_to_next_point
 
@@ -306,12 +327,10 @@ class Student:
 				del (tmp)
 				self.nextPointID = self.findNearestPointID(day)
 
-				#print ("id ~ ", self.currentPointID, MAP.point_list[self.currentPointID].name, '->', self.nextPointID,  MAP.point_list[self.nextPointID].name)
 				tmp = self.currentDirection
 				self.currentDirection = (MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]).copy()
 				del (tmp)
 
-				#print ("!!!!!!", self.schedule.nextDestIdx, MAP.point_list[self.schedule.destPointsID[day][self.schedule.nextDestIdx]].name)
 				if (self.schedule.nextDestIdx < self.schedule.numDestPoints and self.currentPointID == self.schedule.destPointsID[day][self.schedule.nextDestIdx]) \
 					or (self.currentPointID == self.schedule.endPointID): # 到教室了
 					logging.debug("Reach the point!!")
@@ -320,7 +339,6 @@ class Student:
 					logging.debug("Turn to", self.currentPointID, MAP.point_list[self.currentPointID].name)
 			
 			else: # delta_distance < left_distance_to_next_point
-				#assert ((self.currentDirection == (MAP.point_list[self.nextPointID].position - self.currentPosition) / np.linalg.norm(MAP.point_list[self.nextPointID].position - self.currentPosition)).all())
 				self.currentPointID = -1
 				self.currentPosition += self.currentDirection * delta_distance
 				break
@@ -329,9 +347,10 @@ class Student:
 
 	def Action(self, CURRENT_TIME, day):
 
-		if self.healthState.state == 'DEAD':
+		if self.healthState.state == 'DEAD' or self.healthState.quarantined == True:
 			self.scheduleState = 'NULL'
 			return
+
 
 		if CURRENT_TIME in CLASS_END_TIME:
 			logging.debug(f'====================={CURRENT_TIME}============================')
@@ -422,6 +441,7 @@ class Student:
 				if infect_prob > 0 and self.healthState.state == 'SUSCEPTIBLE':
 					if random.random() <= infect_prob:
 						self.healthState.state = 'EXPOSED'
+						self.healthState.infectedDays = 1
 			
 
 	def newDayInit(self, day):
@@ -444,9 +464,9 @@ if __name__ == '__main__':
 				print (CURRENT_TIME)
 			student.Action(CURRENT_TIME, day)
 
-			for point in MAP.point_list:
-				if point.infect_prob > 0:
-					print ("!!!", point.name, point.infect_prob)
+			# for point in MAP.point_list:
+			# 	if point.infect_prob > 0:
+			# 		print ("!!!", point.name, point.infect_prob)
 
 			if student.scheduleState != 'NULL':
 			# show him/her on the map
