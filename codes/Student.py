@@ -196,6 +196,7 @@ class HealthState:
 		self.illnessDays = 0
 		self.currentProb = SEIR_Model.ASYMPTOMATIC_TRANS_PROB if healthState == 'INFECTIOUS' else 0
 		self.quarantined = False
+		self.wearingMask = True if random.random() <= SEIR_Model.WEARING_MASK_PROB else False
 
 	def print(self):
 		print ('---------HealthState---------')
@@ -422,7 +423,10 @@ class Student:
 						del (tmp)
 
 						if self.healthState.state == 'INFECTIOUS':
-							MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
+							if self.healthState.wearingMask:
+								MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb * SEIR_Model.MASK_PROTECTION_PROB
+							else:
+								MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
 
 					else: # 下節同教室
 						self.schedule.nextDestIdx += 1
@@ -434,14 +438,22 @@ class Student:
 					self.scheduleState = 'IDLE'
 
 					if self.healthState.state == 'INFECTIOUS':
-						MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
+						if self.healthState.wearingMask:
+							MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb * SEIR_Model.MASK_PROTECTION_PROB
+						else:
+							MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
 
 			else: # 上課中
 				infect_prob = MAP.point_list[self.currentPointID].infect_prob
 				if infect_prob > 0 and self.healthState.state == 'SUSCEPTIBLE':
-					if random.random() <= infect_prob:
-						self.healthState.state = 'EXPOSED'
-						self.healthState.infectedDays = 1
+					if self.healthState.wearingMask:
+						if random.random() <= infect_prob * SEIR_Model.MASK_PROTECTION_PROB:
+							self.healthState.state = 'EXPOSED'
+							self.healthState.infectedDays = 1
+					else:
+						if random.random() <= infect_prob:
+							self.healthState.state = 'EXPOSED'
+							self.healthState.infectedDays = 1
 			
 
 	def newDayInit(self, day):

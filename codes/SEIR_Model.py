@@ -7,7 +7,9 @@ class SEIR_Model:
 	ASYMPTOMATIC_TRANS_PROB = SYMPTOMATIC_TRANS_PROB / 2
 	SYMPTOMATIC_PROB = 0.63 #0.0205 / 120 (1/min)
 	DEAD_PROB = 0.006240867732 # 43.5 / 794 (1/day) 8~10 days is the infectious period
-	QUARANTINE_PROB = 0	
+	QUARANTINE_PROB = 0
+	MASK_PROTECTION_PROB = 0.292
+	WEARING_MASK_PROB = 0
 
 	@staticmethod
 	def getRandomIncubationPeriod(): # E -> Onset 潛伏期 2~14
