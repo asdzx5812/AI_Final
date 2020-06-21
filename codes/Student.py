@@ -192,7 +192,7 @@ class HealthState:
 		self.latentPeriod = SEIR_Model.getRandomLatentPeriod(self.incubationPeriod) # 潛藏期
 		self.infectiousPeriod = SEIR_Model.getRandomInfectiousPeriod() # 感染期
 		self.illnessPeriod = SEIR_Model.getRandomIllnessPeriod() # 發病期
-		self.infectedDays = 0
+		self.infectedDays = 1 if healthState == 'INFECTIOUS' else 0
 		self.illnessDays = 0
 		self.currentProb = SEIR_Model.ASYMPTOMATIC_TRANS_PROB if healthState == 'INFECTIOUS' else 0
 		self.quarantined = False
@@ -205,8 +205,10 @@ class HealthState:
 		print ('incubationPeriod :', self.incubationPeriod)
 		print ('infectiousPeriod :', self.infectiousPeriod)
 		print ('infectedDays :', self.infectedDays)
+		print ('illnessDays :', self.illnessDays)
 		print ('currentProb :', self.currentProb)
 		print ('quarantined :', self.quarantined)
+		print ('wearingMask :', self.wearingMask)
 		print ('-----------------------------')
 
 	def newDayCheckState(self):
@@ -400,7 +402,10 @@ class Student:
 					self.schedule.nextDestIdx += 1
 
 				if self.healthState.state == 'INFECTIOUS':
-					MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb
+					if self.wearingMask:
+						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb * SEIR_Model.MASK_PROTECTION_PROB
+					else: 
+						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb
 					
 		elif self.scheduleState == 'INCLASS':
 
