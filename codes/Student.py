@@ -83,14 +83,14 @@ HEALTH_STATES = ['SUSCEPTIBLE', 'EXPOSED', 'INFECTIOUS', 'RECOVERED', 'DEAD']
 
 class Schedule:
 	def __init__(self, gender, instituteIdx):
-		self.startPointID = self.getRandomStartPointID(gender)
-		self.destPointsID = []
-		self.destTimes = []
+		self.startPointID = self.getRandomStartPointID(gender) # Student's start point ID
+		self.destPointsID = [] # Destination points ID list of one day
+		self.destTimes = [] # Timestamp list for each destination point of one day
 
-		self.arrangeSchedule(instituteIdx)
-		self.arrangeRestaurant()
+		self.arrangeSchedule(instituteIdx) # The function to arrange each student's schedule
+		self.arrangeRestaurant() # The function to arrange a restaurant for student's lunch
 
-		self.newDayInit(0)
+		self.newDayInit(0) # The function to do some initilaztion at the beginning of a new day
 
 	def newDayInit(self, day):
 		self.startTime = Time.getRandomTimeStamp(Time.addMinutes(self.destTimes[day][0], -30), Time.addMinutes(self.destTimes[day][0], -15)) # 上課前30~15分鐘
@@ -403,7 +403,7 @@ class Student:
 
 				if self.healthState.state == 'INFECTIOUS':
 					if self.healthState.wearingMask:
-						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb * SEIR_Model.MASK_PROTECTION_PROB
+						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb * (1 - SEIR_Model.MASK_PROTECTION_PROB)
 					else: 
 						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb
 					
@@ -429,7 +429,7 @@ class Student:
 
 						if self.healthState.state == 'INFECTIOUS':
 							if self.healthState.wearingMask:
-								MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb * SEIR_Model.MASK_PROTECTION_PROB
+								MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb * (1 - SEIR_Model.MASK_PROTECTION_PROB)
 							else:
 								MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
 
@@ -444,7 +444,7 @@ class Student:
 
 					if self.healthState.state == 'INFECTIOUS':
 						if self.healthState.wearingMask:
-							MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb * SEIR_Model.MASK_PROTECTION_PROB
+							MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb * (1 - SEIR_Model.MASK_PROTECTION_PROB)
 						else:
 							MAP.point_list[self.currentPointID].infect_prob -= self.healthState.currentProb
 
@@ -452,7 +452,7 @@ class Student:
 				infect_prob = MAP.point_list[self.currentPointID].infect_prob
 				if infect_prob > 0 and self.healthState.state == 'SUSCEPTIBLE':
 					if self.healthState.wearingMask:
-						if random.random() <= infect_prob * SEIR_Model.MASK_PROTECTION_PROB:
+						if random.random() <= infect_prob * (1 - SEIR_Model.MASK_PROTECTION_PROB):
 							self.healthState.state = 'EXPOSED'
 							self.healthState.infectedDays = 1
 					else:

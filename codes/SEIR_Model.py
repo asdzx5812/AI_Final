@@ -8,7 +8,7 @@ class SEIR_Model:
 	SYMPTOMATIC_PROB = 0.63 #0.0205 / 120 (1/min)
 	DEAD_PROB = 0.006240867732 # 43.5 / 794 (1/day) 8~10 days is the infectious period
 	QUARANTINE_PROB = 0
-	MASK_PROTECTION_PROB = 0.292
+	MASK_PROTECTION_PROB = 0.292 # / 0.915
 	WEARING_MASK_PROB = 0
 
 	@staticmethod
