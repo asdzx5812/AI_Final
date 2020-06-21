@@ -402,7 +402,7 @@ class Student:
 					self.schedule.nextDestIdx += 1
 
 				if self.healthState.state == 'INFECTIOUS':
-					if self.wearingMask:
+					if self.healthState.wearingMask:
 						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb * SEIR_Model.MASK_PROTECTION_PROB
 					else: 
 						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb
