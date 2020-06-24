@@ -35,12 +35,12 @@ BUILDINGS_ID = [
 	99	# 系館
 ]
 BUILDINGS_PROB_WEIGTS = [
-	0.15,
-	0.15,
-	0.15,
-	0.15,
-	0.05,
-	0.35
+	0.15, # 新生
+	0.15, # 博雅
+	0.15, # 普通 
+	0.15, # 共同
+	0.05, #	新體
+	0.35  # 系館
 ]
 
 INSTITUTES_NAME = ['資工', '外文', '工管', '機械', '生傳', '政治', '法律']
@@ -49,7 +49,7 @@ INSTITUTES_ID = [
 	22, # 文學院 
 	0,  # 管一 
 	32, # 工綜
-	11,  # BICD
+	11, # BICD
 	48, # 社科院
 	49  # 霖澤館
 ]
@@ -62,11 +62,11 @@ RESTAURANTS_ID = [
 	12, # 正門
 	26, # 西門
 	50, # 後門
-	8, # 側門
+	8, 	# 側門
 	1, 	# 舟山門
 	6,	# 長興街門
 	54,	# 公館門
-	9  # 大一女
+	9  	# 大一女
 ]
 
 CLASS_START_TIME = ['08:10', '09:10', '10:20', '11:20', '12:20', '13:20', '14:20', '15:30', '16:30', '17:30', '18:25']
@@ -90,7 +90,7 @@ class Schedule:
 		self.arrangeSchedule(instituteIdx) # The function to arrange each student's schedule
 		self.arrangeRestaurant() # The function to arrange a restaurant for student's lunch
 
-		self.newDayInit(0) # The function to do some initilaztion at the beginning of a new day
+		self.newDayInit(0) # The function to do some initialization at the beginning of a new day
 
 	def newDayInit(self, day):
 		self.startTime = Time.getRandomTimeStamp(Time.addMinutes(self.destTimes[day][0], -30), Time.addMinutes(self.destTimes[day][0], -15)) # 上課前30~15分鐘
@@ -99,18 +99,20 @@ class Schedule:
 		self.nextDestIdx = 0
 		self.numDestPoints = len(self.destPointsID[day])
 		
-	def arrangeSchedule(self, instituteIdx): # Arrange Class Schedule
-		for day in range(5):
+	def arrangeSchedule(self, instituteIdx): # instituteIdx -> student's institute's index
+		for day in range(5): # from Monday to Friday
 			tmp_destPointsID = []
 			tmp_destTimes = []
 			i = 0
 			while i < len(CLASS_START_TIME)-1: # 每次連續上兩節課
-				if random.random() >= 0.5:
+				if random.random() >= 0.5: # student having a class at each timestamp 
 					destID = self.getRandomDestPointID()
 					if destID == 99: # 系館
 						destID = INSTITUTES_ID[instituteIdx]
+					# First class
 					tmp_destPointsID.append(destID)
 					tmp_destTimes.append(CLASS_START_TIME[i])
+					# Second class
 					i += 1
 					if i < len(CLASS_START_TIME):
 						tmp_destPointsID.append(destID)
@@ -120,14 +122,12 @@ class Schedule:
 			self.destPointsID.append(tmp_destPointsID)
 			self.destTimes.append(tmp_destTimes)
 			
-	def arrangeRestaurant(self): # Arrange Restaraunt for lunch
+	def arrangeRestaurant(self): 
 		for day in range(5):
 			i = 0
-			while i < len(self.destTimes[day]) and Time.compare(self.destTimes[day][i], '<', '12:20'):
+			while i < len(self.destTimes[day]) and Time.compare(self.destTimes[day][i], '<', '12:20'): # Find the first class whose start time exceeds 12:20
 				i += 1
-			# print ("i =",i)
-			# print (self.destTimes[day][i])
-			if i >= len(self.destTimes[day]) or self.destTimes[day][i] != '12:20':
+			if i >= len(self.destTimes[day]) or self.destTimes[day][i] != '12:20': 	
 				if i >= len(self.destTimes[day]):
 					self.destPointsID[day].append(random.choice(RESTAURANTS_ID))
 					self.destTimes[day].append('12:20')
@@ -187,16 +187,16 @@ class Schedule:
 
 class HealthState:
 	def __init__(self, healthState):
-		self.state = healthState
+		self.state = healthState # a value in HEALTH_STATE
 		self.incubationPeriod = SEIR_Model.getRandomIncubationPeriod() # 潛伏期
 		self.latentPeriod = SEIR_Model.getRandomLatentPeriod(self.incubationPeriod) # 潛藏期
 		self.infectiousPeriod = SEIR_Model.getRandomInfectiousPeriod() # 感染期
 		self.illnessPeriod = SEIR_Model.getRandomIllnessPeriod() # 發病期
-		self.infectedDays = 1 if healthState == 'INFECTIOUS' else 0
-		self.illnessDays = 0
-		self.currentProb = SEIR_Model.ASYMPTOMATIC_TRANS_PROB if healthState == 'INFECTIOUS' else 0
-		self.quarantined = False
-		self.wearingMask = True if random.random() <= SEIR_Model.WEARING_MASK_PROB else False
+		self.infectedDays = 1 if healthState == 'INFECTIOUS' else 0 # days since student has entered the INFECTIOUS state
+		self.illnessDays = 0 # days that student has been symptomatic 
+		self.currentProb = SEIR_Model.ASYMPTOMATIC_TRANS_PROB if healthState == 'INFECTIOUS' else 0 # current probability that student can infect others
+		self.quarantined = False # if student is being quarantined
+		self.wearingMask = True if random.random() <= SEIR_Model.WEARING_MASK_PROB else False # if student is wearing a mask
 
 	def print(self):
 		print ('---------HealthState---------')
@@ -255,16 +255,16 @@ class HealthState:
 
 class Student:
 	def __init__(self, healthState='SUSCEPTIBLE'):
-		self.gender = 'male' if random.choice([0, 1]) == 0 else 'female'
-		self.instituteIdx = random.randint(0, len(INSTITUTES_NAME)-1)
-		self.healthState = HealthState(healthState)
-		self.scheduleState = 'NULL'
+		self.gender = 'male' if random.choice([0, 1]) == 0 else 'female' 
+		self.instituteIdx = random.randint(0, len(INSTITUTES_NAME)-1) # index of student's institute
+		self.healthState = HealthState(healthState) 
+		self.scheduleState = 'NULL' # a state in SCHEDULE_STATE
 		self.schedule = Schedule(gender=self.gender, instituteIdx=self.instituteIdx)
-		self.currentPointID = self.schedule.startPointID
-		self.nextPointID = -1
-		self.currentPosition = (MAP.point_list[self.schedule.startPointID].position).copy() # shallow copy
-		self.currentSpeed = 0.0
-		self.currentDirection = np.array([0.0, 0.0])
+		self.currentPointID = self.schedule.startPointID # the ID of current point which the student stands on currently; if student is moving, equals -1
+		self.nextPointID = -1 # the ID of the next point on the path that student is moving to
+		self.currentPosition = (MAP.point_list[self.schedule.startPointID].position).copy() # shallow copy 
+		self.currentSpeed = 0.0 # the speed at which the student is currently moving
+		self.currentDirection = np.array([0.0, 0.0]) # the direction the student is currently moving towards to
 
 	def print(self, day):
 		print ('--------------Student--------------')
@@ -335,10 +335,10 @@ class Student:
 				del (tmp)
 
 				if (self.schedule.nextDestIdx < self.schedule.numDestPoints and self.currentPointID == self.schedule.destPointsID[day][self.schedule.nextDestIdx]) \
-					or (self.currentPointID == self.schedule.endPointID): # 到教室了
+					or (self.currentPointID == self.schedule.endPointID): # 到教室/門口了
 					logging.debug("Reach the point!!")
 					break
-				else:
+				else
 					logging.debug("Turn to", self.currentPointID, MAP.point_list[self.currentPointID].name)
 			
 			else: # delta_distance < left_distance_to_next_point
@@ -370,7 +370,8 @@ class Student:
 			if self.hasNextClass(CURRENT_TIME, day) or (self.schedule.nextDestIdx == self.schedule.numDestPoints and self.timeToLeave(CURRENT_TIME)): # 該上課了
 				self.scheduleState = 'MOVING'
 				self.nextPointID = self.findNearestPointID(day)
-				self.currentSpeed = MOVING_SPEED + random.uniform(-50, 50)
+				self.currentSpeed = 
+
 				tmp = self.currentDirection
 				self.currentDirection = (MAP.point_list[self.currentPointID].unit_vec[self.nextPointID]).copy()
 				del (tmp)
@@ -390,22 +391,24 @@ class Student:
 					offset_y = MAP.point_list[self.currentPointID].offset[1]
 					self.currentPosition[0] += random.uniform(offset_x, -offset_x)
 					self.currentPosition[1] += random.uniform(offset_y, -offset_y)
+
+					self.currentSpeed = 0.0
+					self.currentDirection = np.array([0.0, 0.0])
+					if self.schedule.nextDestIdx < self.schedule.numDestPoints:
+						self.schedule.nextDestIdx += 1
+
+					if self.healthState.state == 'INFECTIOUS':
+						if self.healthState.wearingMask:
+							MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb * (1 - SEIR_Model.MASK_PROTECTION_PROB)
+						else: 
+							MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb
 					
 				else :
 					logging.debug(f'Bye bye!! --{CURRENT_TIME}')
 					self.scheduleState = 'NULL'
 					return
 
-				self.currentSpeed = 0.0
-				self.currentDirection = np.array([0.0, 0.0])
-				if self.schedule.nextDestIdx < self.schedule.numDestPoints:
-					self.schedule.nextDestIdx += 1
-
-				if self.healthState.state == 'INFECTIOUS':
-					if self.healthState.wearingMask:
-						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb * (1 - SEIR_Model.MASK_PROTECTION_PROB)
-					else: 
-						MAP.point_list[self.currentPointID].infect_prob += self.healthState.currentProb
+				
 					
 		elif self.scheduleState == 'INCLASS':
 
